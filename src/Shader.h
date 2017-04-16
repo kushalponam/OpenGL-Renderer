@@ -67,7 +67,7 @@ public:
 	void BindObject(Object *obj);
 	void Bind() { program.Bind(); }
 	void SetUniform(int id, int value) override
-	{ Bind(); program.SetUniform(id, value); };
+	{  };
 	void Init();
 	void Update();
 	void Render();

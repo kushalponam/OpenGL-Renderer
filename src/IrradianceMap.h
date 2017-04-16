@@ -2,6 +2,7 @@
 #define _IRRADIANCE_H
 
 #include "Core.h"
+#include "RenderableObject.h"
 
 class Irradiance:public GLObject
 {
@@ -17,8 +18,10 @@ public:
 
 	void FilterDiffuse();
 	void FilterSpecular();
+	void FilterBRDF();
 private:
 	
+	RenderableObject *quad;
 	glm::mat4 captureViews[6];
 	glm::mat4 projMatrix;
 	std::vector<cy::Point3f> index_vertices;
@@ -41,6 +44,7 @@ private:
 	GLuint sourceMap;
 	GLuint diffusefilterMap;
 	GLuint specularfilterMap;
+	GLuint brdfFilterMap;
 
 	GLuint cubeMeshBuffer;
 	

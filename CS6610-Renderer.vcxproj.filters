@@ -253,6 +253,12 @@
     <None Include="src\Shaders\filterSpecular.frag">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="src\Shaders\filterBRDF.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="src\Shaders\DefaultMVP.vert">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="External\glm\glm\CMakeLists.txt">

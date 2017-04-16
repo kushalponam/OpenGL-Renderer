@@ -86,8 +86,10 @@
     <None Include="src\Shaders\Blinn.vert" />
     <None Include="src\Shaders\Blinn_noTexture.frag" />
     <None Include="src\Shaders\Default.vert" />
+    <None Include="src\Shaders\DefaultMVP.vert" />
     <None Include="src\Shaders\Depth.frag" />
     <None Include="src\Shaders\Depth.vert" />
+    <None Include="src\Shaders\filterBRDF.frag" />
     <None Include="src\Shaders\filterSpecular.frag" />
     <None Include="src\Shaders\irradiance.frag" />
     <None Include="src\Shaders\PBR.frag" />

@@ -22,18 +22,18 @@ void QuadShader::RegisterUniforms() {
 
 	// in vertex Shader
 	program.RegisterUniform(1, "MVP");
-	program.RegisterUniform(2, "NormalMatrix");
+	/*program.RegisterUniform(2, "NormalMatrix");
 	program.RegisterUniform(3, "Model");
 	program.RegisterUniform(4, "View");
 	program.RegisterUniform(5, "Light_Pos");
-	program.RegisterUniform(10, "kd");
+	program.RegisterUniform(10, "kd");*/
 
 	// in fragment Shader
-	program.RegisterUniform(6, "SpecularStength");
+	/*program.RegisterUniform(6, "SpecularStength");
 	program.RegisterUniform(7, "LightIntensity");
 	program.RegisterUniform(8, "Shininess");
-	program.RegisterUniform(9, "AmbientIntensity");
-	program.RegisterUniform(11, "RTTTexture");
+	program.RegisterUniform(9, "AmbientIntensity");*/
+	program.RegisterUniform(2, "RTTTexture");
 
 }
 
@@ -69,7 +69,7 @@ void QuadShader::Init()
 
 	glm::vec3 diffCol = glm::vec3(0.5f, 0.5f, 0.5f);
 	program.SetUniform(10, diffCol.r, diffCol.g, diffCol.b);*/
-
+	program.SetUniform(2, 7);
 }
 
 
@@ -98,9 +98,9 @@ void QuadShader::Update()
 		glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(viewMatrix) * glm::mat3(modelMatrix)));
 
 		obj->SetMVPMatrix(mvp);
-		obj->SetNormalMatrix(normalMatrix);
+		//obj->SetNormalMatrix(normalMatrix);
 	}
-	program.SetUniformMatrix4(4, &viewMatrix[0][0]);
+	//program.SetUniformMatrix4(4, &viewMatrix[0][0]);
 
 }
 
@@ -119,8 +119,8 @@ void QuadShader::Render()
 		glm::mat4 modelMatrix = obj->GetModelMatrix();
 
 		program.SetUniformMatrix4(1, &mvp[0][0]);
-		program.SetUniformMatrix3(2, &normalMatrix[0][0]);
-		program.SetUniformMatrix4(3, &modelMatrix[0][0]);
+		/*program.SetUniformMatrix3(2, &normalMatrix[0][0]);
+		program.SetUniformMatrix4(3, &modelMatrix[0][0]);*/
 
 	
 		glDrawArrays(GL_TRIANGLES, 0, obj->GetVertexIndicesSize());

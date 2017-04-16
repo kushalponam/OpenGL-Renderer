@@ -86,6 +86,7 @@ void Scene::Init()
 	lightMesh1->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
 	lightMesh1->SetMaterial(whiteMat);
 	
+
 	//Create camera and lights.
 	camera = new Camera();
 	camera->InitPerspectiveCamera(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 500.0f);
@@ -137,6 +138,7 @@ void Scene::Init()
 	rightWall->SetScale(glm::vec3(20, 20, 1));
 	rightWall->SetMaterial(greenMat);
 
+	
 	DepthShader* depthShader = new DepthShader("src/Shaders/Depth.vert", "src/Shaders/Depth.frag");
 	depthShader->Init();
 	depthShader->BindObject((Object*)dragon);
@@ -160,7 +162,6 @@ void Scene::Init()
 	blinn->BindObject((Object*)topWall);
 
 	ShaderList.push_back(blinn);
-
 	
 	for(unsigned int i=0;i<lights.size();i++)
 	{
@@ -171,7 +172,7 @@ void Scene::Init()
 	
 	irradiance->FilterDiffuse();
 	irradiance->FilterSpecular();
-	
+	irradiance->FilterBRDF();
 }
 
 void Scene::Update()

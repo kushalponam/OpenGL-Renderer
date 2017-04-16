@@ -108,7 +108,7 @@ void Skybox::Render()
 	program.SetUniformMatrix4(3, &viewMatrix[0][0]);
 
 
-	program.SetUniform(2, 5);
+	program.SetUniform(2, 6);
 	
 	glDrawArrays(GL_TRIANGLES, 0, index_vertices.size());
 

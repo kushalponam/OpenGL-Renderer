@@ -8,7 +8,7 @@ uniform float roughness;
 in vec3 texCoords;
 const float PI = 3.14159;
 
-/*float RadicalInverse(uint bits)
+float RadicalInverse(uint bits)
 {
 	bits = (bits << 16u) | (bits >> 16u);
     bits = ((bits & 0x55555555u) << 1u) | ((bits & 0xAAAAAAAAu) >> 1u);
@@ -21,33 +21,7 @@ const float PI = 3.14159;
 vec2 Hammersley(uint i, uint N)
 {
     return vec2(float(i)/float(N), RadicalInverse(i));
-}  */
-
-
-float VanDerCorpus(uint n, uint base)
-{
-    float invBase = 1.0 / float(base);
-    float denom   = 1.0;
-    float result  = 0.0;
-
-    for(uint i = 0u; i < 32u; ++i)
-    {
-        if(n > 0u)
-        {
-            denom   = mod(float(n), 2.0);
-            result += denom * invBase;
-            invBase = invBase / 2.0;
-            n       = uint(float(n) / 2.0);
-        }
-    }
-
-    return result;
-}
-// ----------------------------------------------------------------------------
-vec2 Hammersley(uint i, uint N)
-{
-    return vec2(float(i)/float(N), VanDerCorpus(i, 2u));
-}
+}  
 
 
 vec3 ImportanceSampleGGX(vec2 Xi, vec3 N, float roughness)

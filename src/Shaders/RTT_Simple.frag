@@ -8,7 +8,6 @@ uniform sampler2D RTTTexture;
 
 void main(){
 
-	float depthValue = texture(RTTTexture,UV).r;
-	fColor = vec4(depthValue,depthValue,depthValue,1.0f);
-	
+	vec2 depthValue = texture2D(RTTTexture,UV).rg;
+	fColor = vec4(depthValue,0.0f,1.0f);
 }

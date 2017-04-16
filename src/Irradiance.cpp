@@ -43,6 +43,18 @@ Irradiance::Irradiance(GLuint i_sourceMap, GLuint i_diffusewidth, GLuint i_diffu
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
+
+	glActiveTexture(GL_TEXTURE7);
+	glGenTextures(1, &brdfFilterMap);
+	glBindTexture(GL_TEXTURE_2D, brdfFilterMap);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, 512, 512, 0, GL_RG, GL_FLOAT, nullptr);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+
 }
 
 void Irradiance::Init()
@@ -200,9 +212,46 @@ void Irradiance::FilterSpecular()
 	glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
 }
 
+void Irradiance::FilterBRDF()
+{
+	program.Delete();
+	bool ls = program.BuildFiles("src/Shaders/Default.vert", "src/Shaders/filterBRDF.frag");
+	if (!ls) {
+		printf("Could not load irradiance shaders");
+	}
+	program.Bind();
+
+	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevBuffer);
+	glGetIntegerv(GL_VIEWPORT, prevViewport);
+	
+	quad = new RenderableObject(RenderableObject::Quad);
+	quad->BindVAO();
+
+	glActiveTexture(GL_TEXTURE7);
+	glBindTexture(GL_TEXTURE_2D, brdfFilterMap);
+
+	// Bind FrameBuffer
+	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+
+	glViewport(0, 0, 512, 512);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, brdfFilterMap, 0);
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glDrawArrays(GL_TRIANGLES, 0, quad->GetVertexIndicesSize());
+
+	//UnbindFrame Buffer
+	glBindFramebuffer(GL_FRAMEBUFFER, prevBuffer);
+	glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
+}
+
 
 void Irradiance::CleanUp()
 {
+	if(quad)
+	{
+		delete quad;
+	}
+
 	program.Delete();
 	glDeleteFramebuffers(1, &frameBuffer);
 	glDeleteVertexArrays(1, &VAO);
@@ -210,5 +259,6 @@ void Irradiance::CleanUp()
 	glDeleteBuffers(1, &cubeMeshBuffer);
 	glDeleteTextures(1, &diffusefilterMap);
 	glDeleteTextures(1, &specularfilterMap);
+	glDeleteTextures(1, &brdfFilterMap);
 
 }
