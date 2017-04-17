@@ -62,11 +62,6 @@ void BlinnShader::RegisterUniforms()
 	program.RegisterUniform(17, "AmbientIntensity");
 	program.RegisterUniform(18, "cubeMap");
 	
-	//TODO: Temporary USE move to PBRShader
-	program.RegisterUniform(19, "albedo");
-	program.RegisterUniform(20, "metallic");
-	program.RegisterUniform(21, "roughness");
-
 }
 
 void BlinnShader::BindObject(Object * obj)
@@ -107,17 +102,6 @@ void BlinnShader::Init()
 	float ambient = 0.2f;
 	program.SetUniform(17, ambient);
 
-	//TODO::TEMOPORARY USE ONLY Move To PBRShader
-	glm::vec3 albedo(0.8f, 0.4f, 0.6f);
-	program.SetUniform(19, albedo.x,albedo.y,albedo.z);
-
-	float metallic = 0.1f;
-	program.SetUniform(20, metallic);
-
-	float roughnes = 0.1f;
-	program.SetUniform(21, roughnes);
-
-	
 }
 
 void BlinnShader::Update()
@@ -191,13 +175,10 @@ void BlinnShader::Render() {
 			
 		}
 	
-		glm::vec3 diffCol = obj->GetMaterial()->GetDiffuseColor();
+		glm::vec3 diffCol = obj->GetMaterial()->GetAlbedo();
 		program.SetUniform(14, diffCol.r, diffCol.g, diffCol.b);
 
-		//glm::vec3 albedo(0.8f, 0.4f, 0.6f);
-		program.SetUniform(19, diffCol.x, diffCol.y, diffCol.z);
-
-
+	
 		glDrawArrays(GL_TRIANGLES, 0, obj->GetVertexIndicesSize());
 	}
 }

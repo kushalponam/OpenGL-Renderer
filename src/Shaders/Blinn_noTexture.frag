@@ -39,7 +39,7 @@ float ShadowCalculation(float ndotl,int light){
 	float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
 
 	return shadow;
-	 
+	
 }
 
 
@@ -70,7 +70,7 @@ void main()
 		diffuse *= attenuation;
 		specular*= attenuation;
 
-		rgb += ambient + (( (diffuse * (1.0 - shadow) ) + specular) * NdotL);
+		rgb += ambient + (( (diffuse  ) + specular) * NdotL);
 	
 	}
 	

@@ -33,6 +33,7 @@ out vec3 Normal;
 out vec2 UV;
 out vec3 FragPos;
 out vec3 ViewDirection;
+out mat4 view;
 
 void CalculateLightData(vec3 vertexpos_cameraspace, vec3 EyeDirection ,vec3 fragPos){
 
@@ -72,4 +73,5 @@ void main()
 
 	UV = vec2(TextureCoord);
 	ViewDirection = normalize(EyeDirection);
+	view = View;
 }

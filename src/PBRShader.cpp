@@ -45,6 +45,8 @@ void PBRShader::RegisterUniforms()
 	program.RegisterUniform(16, "metallic");
 	program.RegisterUniform(17, "roughness");
 	program.RegisterUniform(18, "irradianceMap");
+	program.RegisterUniform(19, "specularFilter");
+	program.RegisterUniform(20, "brdfFilter");
 
 }
 
@@ -78,6 +80,8 @@ void PBRShader::Init()
 	}
 
 	program.SetUniform(18, 5);
+	program.SetUniform(19, 6);
+	program.SetUniform(20, 7);
 }
 
 

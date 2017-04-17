@@ -15,11 +15,14 @@ in LightOutData{
 
 uniform sampler2D ShadowMap[MAXLIGHTS];
 uniform samplerCube irradianceMap;
+uniform samplerCube specularFilter;
+uniform sampler2D brdfFilter;
 
 in vec3 Normal;
 in vec2 UV;
 in vec3 FragPos;
 in vec3 ViewDirection;
+in mat4 view;
 
 uniform vec3 albedo;
 uniform float metallic;
@@ -92,7 +95,12 @@ void main()
 
 	vec3 Lo = vec3(0.0);
 	float NdotV = max(dot(Normal,ViewDirection),0.0);
+	
+	vec3 R = 2 * dot(Normal,ViewDirection) * Normal - ViewDirection;
+	R = vec3( inverse(view) * vec4(R,0.0));
 
+	vec3 specularFilterCol = textureLod(specularFilter,R, roughness * 4.0).rgb;
+	
 	vec3 finalKD= vec3(0.0);
 	for (int i=0 ; i< MAXLIGHTS;i++){
 		vec3 Ldir = normalize(fs_in[i].LightDirection);
@@ -124,12 +132,19 @@ void main()
 		Lo += ( kD * albedo*(1.0-shadow) / PI + brdf )* radiance * NdotL;
 	}
 
+	vec3 F = fresnelSchilick(NdotV,F0,roughness);
+	
+	
 	vec3 irradiance = texture(irradianceMap,Normal).rgb;
 	
+	vec2 brdf = texture(brdfFilter, vec2(NdotV,roughness)).rg;
+
+	vec3 specular = specularFilterCol * (F * brdf.x + brdf.y);
+
 	finalKD = finalKD/(finalKD  + vec3(1.0));
 	
 	vec3 diffuse = irradiance * albedo;
-	vec3 ambient = finalKD * diffuse ;
+	vec3 ambient = finalKD * diffuse + specular;
 
 	vec3 color = ambient + Lo;
 

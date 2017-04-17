@@ -33,6 +33,7 @@ public:
 	void Update();
 	void Render();
 	void CleanUp();
+	void ShadowPass();
 	Camera* GetCamera() const;
 	
 	Skybox* GetSkyBox() const;
@@ -41,6 +42,7 @@ public:
 
 	MeshLoader* GetMeshLoader() const { return meshLoader; }
 	std::vector<Light*> GetLights() const;
+	std::vector<Shader*> GetEnvironmentList()const { return envList; }
 
 	void AddLight(Light* light);
 	//QuadObject* GetQuadObject() { return quadObject; }
@@ -55,6 +57,7 @@ private:
 
 	std::vector<Shader*> ShaderList;
 	std::vector<Shader*> depthShaderList;
+	std::vector<Shader*> envList;
 	std::vector<Light*> lights;
 	std::vector<Material*> matList;
 

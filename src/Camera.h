@@ -13,6 +13,8 @@ public:
 
 	void SetPosition(glm::vec3 i_position);
 	void SetViewDirection(glm::vec3 i_direction);
+	void SetProjectionMatrix(glm::mat4 i_projection) { projectionMatrix = i_projection; }
+	void SetViewMatrix(glm::mat4 i_view) { viewMatrix = i_view; }
 	void Update();
 
 	void OnMouseMove(int x, int y);

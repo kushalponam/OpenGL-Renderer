@@ -1,7 +1,7 @@
 #include "IrradianceMap.h"
 #include "Scene.h"
 
-Irradiance::Irradiance(GLuint i_sourceMap, GLuint i_diffusewidth, GLuint i_diffuseHeight,GLuint i_specularWidth, GLuint i_specularHeight)
+Irradiance::Irradiance(int i_sourceMap, GLuint i_diffusewidth, GLuint i_diffuseHeight,GLuint i_specularWidth, GLuint i_specularHeight)
 {
 	sourceMap = i_sourceMap;
 	diffuseWidth = i_diffusewidth;
@@ -9,7 +9,11 @@ Irradiance::Irradiance(GLuint i_sourceMap, GLuint i_diffusewidth, GLuint i_diffu
 	specularWidth = i_specularWidth;
 	specularHeight = i_specularHeight;
 
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+
 	glGenFramebuffers(1, &frameBuffer);
+	glGenRenderbuffers(1, &renderBuffer);
 
 	glActiveTexture(GL_TEXTURE5);
 	glGenTextures(1, &diffusefilterMap);
@@ -55,13 +59,25 @@ Irradiance::Irradiance(GLuint i_sourceMap, GLuint i_diffusewidth, GLuint i_diffu
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 
+	glActiveTexture(GL_TEXTURE8);
+	glGenTextures(1, &envMap);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, envMap);
+
+	for (unsigned int i = 0; i < 6; i++)
+	{
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, 1024, 1024, 0, GL_RGB, GL_FLOAT, nullptr);
+	}
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+
 }
 
 void Irradiance::Init()
 {
-
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
 
 	Scene* scene = Scene::getScene();
 	cubeMesh = scene->GetMeshLoader()->GetMesh("cube.obj");
@@ -86,6 +102,14 @@ void Irradiance::Init()
 	captureViews[3] = glm::lookAt(glm::vec3(0, 0, 0), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0, 0, -1));
 	captureViews[4] = glm::lookAt(glm::vec3(0, 0, 0), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0, -1, 0));
 	captureViews[5] = glm::lookAt(glm::vec3(0, 0, 0), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0, -1, 0));
+
+	glm::vec3 camPos = glm::vec3(0, 0, 10);
+	cameraView[0] = glm::lookAt(camPos, camPos+ glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0, -1, 0));
+	cameraView[1] = glm::lookAt(camPos, camPos+ glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0, -1, 0));
+	cameraView[2] = glm::lookAt(camPos, camPos+ glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0, 0, 1));
+	cameraView[3] = glm::lookAt(camPos, camPos+ glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0, 0, -1));
+	cameraView[4] = glm::lookAt(camPos, camPos+ glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0, -1, 0));
+	cameraView[5] = glm::lookAt(camPos, camPos+ glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0, -1, 0));
 	
 	glGenBuffers(1, &cubeMeshBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, cubeMeshBuffer);
@@ -95,28 +119,82 @@ void Irradiance::Init()
 
 }
 
+
 void Irradiance::RenderCube()
 {
 	glDrawArrays(GL_TRIANGLES, 0, index_vertices.size());
 }
 
+void Irradiance::CaptureEnvironment()
+{
+	
+	Scene *scene = Scene::getScene();
+	Camera* camera = scene->GetCamera();
+	
+
+	std::vector<Shader*> envList = scene->GetEnvironmentList();
+
+	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevBuffer);
+	glGetIntegerv(GL_VIEWPORT, prevViewport);
+
+	glActiveTexture(GL_TEXTURE8);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, envMap);
+	
+	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+	
+	glBindRenderbuffer(GL_RENDERBUFFER, renderBuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 1024, 1024);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderBuffer);
+
+
+	glViewport(0, 0, 1024, 1024);
+	
+	glm::mat4 projection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 50.0f);
+	
+	camera->SetProjectionMatrix(projection);
+	//scene->ShadowPass();
+	for (unsigned int i = 0; i < 6; i++)
+	{
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envMap, 0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
+		camera->SetViewMatrix(cameraView[i]);
+		
+		for(unsigned int j=0;j<envList.size();j++)
+		{
+			envList[j]->Update();
+			envList[j]->Render();
+		}
+	
+	}
+	//UnbindFrame Buffer
+	glBindFramebuffer(GL_FRAMEBUFFER, prevBuffer);
+	glViewport(prevViewport[0], prevViewport[1], prevViewport[2], prevViewport[3]);
+}
+
+
 
 // This should only run once. We are just pre computing irradiance
 void Irradiance::FilterDiffuse()
 {
-	program.Delete();
-	bool ls = program.BuildFiles("src/Shaders/skyboxVertexShader.vert", "src/Shaders/irradiance.frag");
-	if (!ls) {
-		printf("Could not load irradiance shaders");
+	bool loaded = program.BuildFiles("src/Shaders/skyboxVertexShader.vert", "src/Shaders/irradiance.frag");
+	if(!loaded)
+	{
+		printf("Could not load diffuse shader");
+		return;
 	}
+	program.Bind();
 
 	program.RegisterUniform(1, "projectionMatrix");
 	program.RegisterUniform(2, "cubeMap");
 	program.RegisterUniform(3, "viewMatrix");
-
-
+	
+	// SourceMap is where we have cubeMap texture 
+	program.SetUniform(2, sourceMap);
+	program.SetUniformMatrix4(1, &projMatrix[0][0]);
+	
+	
 	glBindVertexArray(VAO);
-	program.Bind();
 
 	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevBuffer);
 	glGetIntegerv(GL_VIEWPORT, prevViewport);
@@ -127,10 +205,6 @@ void Irradiance::FilterDiffuse()
 	// Bind FrameBuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
 	
-	// SourceMap is where we have curbeMap texture 
-	program.SetUniform(2, sourceMap);
-	program.SetUniformMatrix4(1, &projMatrix[0][0]);
-
 	glViewport(0, 0 ,diffuseWidth, diffuseHeight);
 
 	for (unsigned int i = 0; i<6; i++)
@@ -155,11 +229,13 @@ void Irradiance::FilterDiffuse()
 
 void Irradiance::FilterSpecular()
 {
-	program.Delete();
-	bool ls = program.BuildFiles("src/Shaders/skyboxVertexShader.vert", "src/Shaders/filterSpecular.frag");
-	if (!ls) {
-		printf("Could not load irradiance shaders");
+	bool loaded = program.BuildFiles("src/Shaders/skyboxVertexShader.vert", "src/Shaders/filterSpecular.frag");
+	if (!loaded)
+	{
+		printf("Could not load diffuse shader");
+		return;
 	}
+	program.Bind();
 
 	program.RegisterUniform(1, "projectionMatrix");
 	program.RegisterUniform(2, "cubeMap");
@@ -167,7 +243,6 @@ void Irradiance::FilterSpecular()
 	program.RegisterUniform(4, "roughness");
 	
 	glBindVertexArray(VAO);
-	program.Bind();
 	
 	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevBuffer);
 	glGetIntegerv(GL_VIEWPORT, prevViewport);
@@ -214,10 +289,11 @@ void Irradiance::FilterSpecular()
 
 void Irradiance::FilterBRDF()
 {
-	program.Delete();
-	bool ls = program.BuildFiles("src/Shaders/Default.vert", "src/Shaders/filterBRDF.frag");
-	if (!ls) {
-		printf("Could not load irradiance shaders");
+	bool loaded = program.BuildFiles("src/Shaders/Default.vert", "src/Shaders/filterBRDF.frag");
+	if (!loaded)
+	{
+		printf("Could not load diffuse shader");
+		return;
 	}
 	program.Bind();
 
@@ -253,12 +329,14 @@ void Irradiance::CleanUp()
 	}
 
 	program.Delete();
+	
 	glDeleteFramebuffers(1, &frameBuffer);
+	glDeleteRenderbuffers(1, &renderBuffer);
 	glDeleteVertexArrays(1, &VAO);
 
 	glDeleteBuffers(1, &cubeMeshBuffer);
 	glDeleteTextures(1, &diffusefilterMap);
 	glDeleteTextures(1, &specularfilterMap);
 	glDeleteTextures(1, &brdfFilterMap);
-
+	glDeleteTextures(1, &envMap);
 }

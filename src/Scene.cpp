@@ -17,7 +17,7 @@ void Scene::Init()
 
 	skybox->Init();
 
-	irradiance = new Irradiance(0, 32, 32,256,256);
+	irradiance = new Irradiance(8, 32, 32,256,256);
 	irradiance->Init();
 	
 	Material *dragonRoughMat = new Material();
@@ -45,10 +45,20 @@ void Scene::Init()
 	redMat->SetMetallic(0.1f);
 	redMat->SetRoughness(0.9f);
 
+	Material *blueMat = new Material();
+	blueMat->SetAlbedo(glm::vec3(0.0f, 0.0f, 0.8f));
+	blueMat->SetMetallic(0.1f);
+	blueMat->SetRoughness(0.9f);
+
 	Material *greenMat = new Material();
 	greenMat->SetAlbedo(glm::vec3(0.0f, 1.0f, 0.0f));
 	greenMat->SetMetallic(0.1f);
 	greenMat->SetRoughness(0.9f);
+
+	Material *purple = new Material();
+	purple->SetAlbedo(glm::vec3(0.5f, 0.0f, 0.5f));
+	purple->SetMetallic(0.1f);
+	purple->SetRoughness(0.9f);
 
 	matList.push_back(dragonRoughMat);
 	matList.push_back(dragonSmoothMat);
@@ -56,21 +66,26 @@ void Scene::Init()
 	matList.push_back(whiteMat);
 	matList.push_back(redMat);
 	matList.push_back(greenMat);
+	matList.push_back(blueMat);
+	matList.push_back(purple);
 
 	//RenderableObject *teapot = new RenderableObject("newTeapot.obj");
 	RenderableObject *dragon = new RenderableObject("newTeapot.obj");
 	dragon->SetTranslation(glm::vec3(-20.0f, -5.0f, 20.0f));
 	dragon->SetScale(glm::vec3(0.6f, 0.6f, 0.6f));
+	//dragon->SetScale(glm::vec3(20, 20, 20));
 	dragon->SetMaterial(dragonRoughMat);
 
 	RenderableObject *dragon2 = new RenderableObject("newTeapot.obj");
 	dragon2->SetTranslation(glm::vec3(20.0f, -5.0f, 20.0f));
 	dragon2->SetScale(glm::vec3(0.6f, 0.6f, 0.6f));
+	//dragon2->SetScale(glm::vec3(20, 20, 20));
 	dragon2->SetMaterial(dragonSmoothMat);
 
 	RenderableObject *dragon3 = new RenderableObject("newTeapot.obj");
 	dragon3->SetTranslation(glm::vec3(0.0f, -5.0f, 20.0f));
 	dragon3->SetScale(glm::vec3(0.6f, 0.6f, 0.6f));
+	//dragon3->SetScale(glm::vec3(20, 20, 20));
 	dragon3->SetMaterial(dragonMiddleMat);
 
 	//meshLoader->LoadMesh("light/light.obj");
@@ -96,16 +111,16 @@ void Scene::Init()
 
 	SpotLight* light = new SpotLight(lightMesh);
 	light->Init();
-	light->SetIntensity(0.0f);
-	//light->SetColor(glm::vec3(25, 25, 25));
-	light->SetColor(glm::vec3(0, 0, 0));
+	light->SetIntensity(10.0f);
+	light->SetColor(glm::vec3(25, 25, 25));
+	//light->SetColor(glm::vec3(0, 0, 0));
 	AddLight(light);
 
 	SpotLight* light1 = new SpotLight(lightMesh1);
 	light1->Init();
 	light1->SetIntensity(10.0f);
-	//light1->SetColor(glm::vec3(25, 25, 25));
-	light1->SetColor(glm::vec3(0, 0, 0));
+	light1->SetColor(glm::vec3(25, 25, 25));
+	//light1->SetColor(glm::vec3(0, 0, 0));
 	AddLight(light1);
 
 	RenderableObject *bottomWall = new RenderableObject(RenderableObject::Quad);
@@ -144,10 +159,10 @@ void Scene::Init()
 	depthShader->BindObject((Object*)dragon);
 	depthShader->BindObject((Object*)dragon2);
 	depthShader->BindObject((Object*)dragon3);
-
-	//depthShader->BindObject((Object*)quadObject);
 	depthShaderList.push_back(depthShader);
 
+
+	//BlinnShader* blinn = new BlinnShader("src/Shaders/Blinn.vert", "src/Shaders/Blinn_noTexture.frag");
 	PBRShader* blinn = new PBRShader("src/Shaders/PBR.vert", "src/Shaders/PBR.frag");
 	blinn->Init();
 	blinn->BindObject((Object*)dragon);
@@ -160,8 +175,17 @@ void Scene::Init()
 	blinn->BindObject((Object*)leftWall);
 	blinn->BindObject((Object*)rightWall);
 	blinn->BindObject((Object*)topWall);
-
 	ShaderList.push_back(blinn);
+
+	BlinnShader* basic = new BlinnShader("src/Shaders/Blinn.vert", "src/Shaders/Blinn_noTexture.frag");
+	basic->Init();
+	basic->BindObject((Object*)bottomWall);
+	basic->BindObject((Object*)leftWall);
+	basic->BindObject((Object*)rightWall);
+	basic->BindObject((Object*)topWall);
+	basic->BindObject((Object*)backWall);
+	basic->BindObject((Object*)dragon2);
+	envList.push_back(basic);
 	
 	for(unsigned int i=0;i<lights.size();i++)
 	{
@@ -169,7 +193,14 @@ void Scene::Init()
 	}
 	
 	//Precompute Irradiance for Diffuse and Specular
-	
+	irradiance->CaptureEnvironment();
+
+	//reset camera after capturing environment;
+	camera->InitPerspectiveCamera(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 500.0f);
+	camera->SetPosition(glm::vec3(0, 0, -20));
+	camera->SetViewDirection(glm::vec3(0, 0, 1));
+	camera->Update();
+
 	irradiance->FilterDiffuse();
 	irradiance->FilterSpecular();
 	irradiance->FilterBRDF();
@@ -191,9 +222,16 @@ void Scene::Update()
 	}
 }
 
+void Scene::ShadowPass()
+{
+	
+
+	
+
+}
+
 void Scene::Render()
 {
-	//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Shadow PASS START@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
 	for (unsigned int i = 0; i<lights.size(); i++)
@@ -208,14 +246,13 @@ void Scene::Render()
 	}
 
 	glDisable(GL_CULL_FACE);
-	
+
 	lights[0]->GetDepthTexture()->Unbind();
 	for (unsigned int i = 0; i<lights.size(); i++)
 	{
 		lights[i]->GetDepthTexture()->BindTexture(1 + i);
 	}
-	//############################################ Shadow PASS END #####################################
-
+	
 	//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Render PASS START@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -247,6 +284,12 @@ void Scene::CleanUp()
 	}
 	for (unsigned int i = 0; i < depthShaderList.size(); i++) {
 		Shader *shader = depthShaderList[i];
+		delete shader;
+	}
+
+	for(unsigned int i=0;i<envList.size();i++)
+	{
+		Shader *shader = envList[i];
 		delete shader;
 	}
 
@@ -295,6 +338,7 @@ void Scene::CleanUp()
 
 	renderBuffer.Delete();
 }
+
 
 Camera * Scene::GetCamera() const
 {

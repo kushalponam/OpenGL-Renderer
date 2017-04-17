@@ -12,16 +12,13 @@
 Scene *scene;
 void Init(int argc,char **argv) {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-
+	
 	scene = Scene::getScene();
 	scene->Init();
-
+	
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-	//glEnable(GL_FRAMEBUFFER_SRGB);
-	/*glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)*/;
 }
 
 

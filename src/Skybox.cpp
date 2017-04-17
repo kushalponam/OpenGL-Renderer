@@ -71,6 +71,8 @@ void Skybox::Init()
 	program.RegisterUniform(3, "viewMatrix");
 	program.Bind();
 
+	program.SetUniform(2, 5);
+
 	glGenBuffers(1, &cubeMeshBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, cubeMeshBuffer);
 	glNamedBufferStorage(cubeMeshBuffer, index_vertices.size() * sizeof(cy::Point3f), &index_vertices[0], 0);
@@ -108,7 +110,7 @@ void Skybox::Render()
 	program.SetUniformMatrix4(3, &viewMatrix[0][0]);
 
 
-	program.SetUniform(2, 6);
+	//program.SetUniform(2, 8);
 	
 	glDrawArrays(GL_TRIANGLES, 0, index_vertices.size());
 

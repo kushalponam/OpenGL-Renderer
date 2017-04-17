@@ -1,4 +1,4 @@
-#version 400 core
+#version 330 core
 
 
 layout (location = 0) out vec4 fColor;
@@ -9,10 +9,10 @@ in vec3 texCoords;
 const float PI = 3.14159;
 void main()
 {
-
+	vec3 irradiance = vec3(0.0);
 	vec3 normal = normalize(texCoords);
 
-	vec3 irradiance = vec3(0.0);
+	
 	vec3 up = vec3(0.0,1.0,0.0);
 	vec3 right = cross(up,normal);
 	up = cross(normal,right);
@@ -34,6 +34,7 @@ void main()
 	}
 
 	irradiance = PI * irradiance * (1.0 / float(nrSamples));
+	//vec3 temp= texture(cubeMap,texCoords).rgb;
 
 	fColor = vec4(irradiance,1.0f);
 }
