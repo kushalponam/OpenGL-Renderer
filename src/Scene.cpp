@@ -70,22 +70,22 @@ void Scene::Init()
 	matList.push_back(purple);
 
 	//RenderableObject *teapot = new RenderableObject("newTeapot.obj");
-	RenderableObject *dragon = new RenderableObject("newTeapot.obj");
+	RenderableObject *dragon = new RenderableObject("dragon/dragon.obj");
 	dragon->SetTranslation(glm::vec3(-20.0f, -5.0f, 20.0f));
-	dragon->SetScale(glm::vec3(0.6f, 0.6f, 0.6f));
-	//dragon->SetScale(glm::vec3(20, 20, 20));
+	//dragon->SetScale(glm::vec3(0.6f, 0.6f, 0.6f));
+	dragon->SetScale(glm::vec3(20, 20, 20));
 	dragon->SetMaterial(dragonRoughMat);
 
-	RenderableObject *dragon2 = new RenderableObject("newTeapot.obj");
+	RenderableObject *dragon2 = new RenderableObject("dragon/dragon.obj");
 	dragon2->SetTranslation(glm::vec3(20.0f, -5.0f, 20.0f));
-	dragon2->SetScale(glm::vec3(0.6f, 0.6f, 0.6f));
-	//dragon2->SetScale(glm::vec3(20, 20, 20));
+	//dragon2->SetScale(glm::vec3(0.6f, 0.6f, 0.6f));
+	dragon2->SetScale(glm::vec3(20, 20, 20));
 	dragon2->SetMaterial(dragonSmoothMat);
 
-	RenderableObject *dragon3 = new RenderableObject("newTeapot.obj");
+	RenderableObject *dragon3 = new RenderableObject("dragon/dragon.obj");
 	dragon3->SetTranslation(glm::vec3(0.0f, -5.0f, 20.0f));
-	dragon3->SetScale(glm::vec3(0.6f, 0.6f, 0.6f));
-	//dragon3->SetScale(glm::vec3(20, 20, 20));
+	//dragon3->SetScale(glm::vec3(0.6f, 0.6f, 0.6f));
+	dragon3->SetScale(glm::vec3(20, 20, 20));
 	dragon3->SetMaterial(dragonMiddleMat);
 
 	//meshLoader->LoadMesh("light/light.obj");

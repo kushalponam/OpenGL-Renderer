@@ -134,8 +134,9 @@ void main()
 
 	vec3 F = fresnelSchilick(NdotV,F0,roughness);
 	
+	vec3 Normal_world = vec3(view * vec4(Normal,0.0));
 	
-	vec3 irradiance = texture(irradianceMap,Normal).rgb;
+	vec3 irradiance = texture(irradianceMap,Normal_world).rgb;
 	
 	vec2 brdf = texture(brdfFilter, vec2(NdotV,roughness)).rg;
 
@@ -150,6 +151,8 @@ void main()
 
 	color = color/(color + vec3(1.0));
 	color = pow(color , vec3(1.0/2.2));
+
+	
 
 	fColor = vec4( color  ,1.0);
 
