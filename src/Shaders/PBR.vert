@@ -1,7 +1,7 @@
 #version 400 core
 #pragma optionNV(unroll all)
 
-#define MAXLIGHTS 2
+#define MAXLIGHTS 3
 
 layout (location=0) in vec3 VertexPosition;
 layout (location=1) in vec3 VertexNormal;
@@ -18,6 +18,7 @@ struct Light{
 	vec3 Light_Col;
 	vec3 Light_dir;
 	float cutoff;
+	float outerCutoff;
 };
 uniform Light lights[MAXLIGHTS];
 
@@ -29,6 +30,7 @@ out LightOutData{
 	vec3 Light_Col;
 	vec3 SpotLightDirection;
 	float cutoff;
+	float outerCutoff;
 }fs_Out[MAXLIGHTS];
 
 // V = Eye Dir, L = Light Dir, N = Normal , H = halfVector
@@ -58,6 +60,8 @@ void CalculateLightData(vec3 vertexpos_cameraspace, vec3 EyeDirection ,vec3 frag
 		fs_Out[i].SpotLightDirection = lights[i].Light_dir;
 		
 		fs_Out[i].cutoff = lights[i].cutoff;
+
+		fs_Out[i].outerCutoff = lights[i].outerCutoff;
 	}
 }
 

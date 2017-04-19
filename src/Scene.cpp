@@ -86,6 +86,12 @@ void Scene::Init()
 	lightMesh1->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
 	lightMesh1->SetMaterial(whiteMat);
 	
+	RenderableObject *lightMesh2 = new RenderableObject("light/light.obj");
+	lightMesh2->SetTranslation(glm::vec3(0.0f, 29.0f, 10.0f));
+	lightMesh2->SetRotation(glm::radians(270.0f), glm::vec3(1, 0, 0));
+	lightMesh2->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
+	lightMesh2->SetMaterial(whiteMat);
+
 
 	//Create camera and lights.
 	camera = new Camera();
@@ -96,17 +102,33 @@ void Scene::Init()
 
 	SpotLight* light = new SpotLight(lightMesh);
 	light->Init();
-	light->SetIntensity(10.0f);
-	light->SetColor(glm::vec3(25, 25, 25));
-	//light->SetColor(glm::vec3(0, 0, 0));
+	light->SetIntensity(30.0f);
+	light->SetColor(glm::vec3(0.94f, 0.85f, 0.64f) * 25);
+	glm::vec3 dir = glm::vec3(roomWidth, 0.0f, 10.0f) - light->GetPosition();
+	light->SetDirection(dir);
+	light->SetCutoff(glm::radians(25.0f));
+	light->SetOuterCutoff(glm::radians(35.0f));
 	AddLight(light);
 
 	SpotLight* light1 = new SpotLight(lightMesh1);
 	light1->Init();
-	light1->SetIntensity(10.0f);
-	light1->SetColor(glm::vec3(25, 25, 25));
-	//light1->SetColor(glm::vec3(0, 0, 0));
+	light1->SetIntensity(30.0f);
+	light1->SetColor(glm::vec3(0.94f, 0.85f, 0.64f) * 25);
+	glm::vec3 dir1 = glm::vec3(-roomWidth, 0.0f, 10.0f) - light1->GetPosition();
+	light1->SetDirection(dir1);
+	light1->SetCutoff(glm::radians(25.0f));
+	light1->SetOuterCutoff(glm::radians(35.0f));
 	AddLight(light1);
+
+	SpotLight* light2 = new SpotLight(lightMesh2);
+	light2->Init();
+	light2->SetIntensity(30.0f);
+	light2->SetColor(glm::vec3(0.94f, 0.85f, 0.64f) * 25);
+	glm::vec3 dir2 = glm::vec3(0.0f, -roomHeight/2 + 10, roomWidth) - light2->GetPosition();
+	light2->SetDirection(dir2);
+	light2->SetCutoff(glm::radians(25.0f));
+	light2->SetOuterCutoff(glm::radians(35.0f));
+	AddLight(light2);
 
 	
 

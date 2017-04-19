@@ -1,7 +1,7 @@
 #version 400 core
 #pragma optionNV(unroll all)
 
-#define MAXLIGHTS 2
+#define MAXLIGHTS 3
 
 layout (location = 0) out vec4 fColor;
 
@@ -13,6 +13,7 @@ in LightOutData{
 	vec3 Light_Col;
 	vec3 SpotLightDirection;
 	float cutoff;
+	float outerCutoff;
 }fs_in[MAXLIGHTS];
 
 uniform sampler2D ShadowMap[MAXLIGHTS];
@@ -104,7 +105,7 @@ void main()
 	vec3 specularFilterCol = textureLod(specularFilter,R, roughness * 4.0).rgb;
 	
 	vec3 finalKD= vec3(0.0);
-	
+	//int i=0;
 	for (int i=0 ; i< MAXLIGHTS;i++){
 		vec3 Ldir = normalize(fs_in[i].LightDirection);
 
@@ -120,8 +121,8 @@ void main()
 		
 		vec3 radiance = vec3(0.0);
 		
-		float epsilon = fs_in[i].cutoff - cos(radians(27.5f));
-		float intensity = clamp( (theta - cos(radians(27.5f))) / epsilon , 0.0,1.0);
+		float epsilon = fs_in[i].cutoff - fs_in[i].outerCutoff;
+		float intensity = clamp( (theta - fs_in[i].outerCutoff) / epsilon , 0.0,1.0);
 		vec3 lightCol = (fs_in[i].Light_Col*intensity);
 		
 		radiance = lightCol * attenuation;
@@ -135,7 +136,7 @@ void main()
 		vec3 kD = vec3(1.0) - kS;
 		kD *= 1.0 - metallic;
 
-		finalKD += kD * intensity;
+		finalKD += kD * radiance;
 
 		vec3 nominator = NDF * G * F;
 		float denominator = 4 * NdotV * NdotL + 0.001;
@@ -152,7 +153,7 @@ void main()
 	
 	vec3 Normal_world = vec3( view * vec4(Normal,0.0));
 	
-	vec3 irradiance = texture(irradianceMap,Normal_world).rgb;
+	vec3 irradiance = texture(irradianceMap,Normal).rgb;
 	
 	vec2 brdf_1 = texture(brdfFilter, vec2(NdotV,roughness)).rg;
 

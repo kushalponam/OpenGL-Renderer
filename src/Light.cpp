@@ -56,3 +56,11 @@ void SpotLight::OnKeyDown(unsigned char key, int x, int y)
 void SpotLight::OnKeyUp(unsigned char key, int x, int y)
 {
 }
+
+void SpotLight::SetDirection(glm::vec3 i_direction)
+{
+
+	direction = glm::normalize(i_direction);
+	viewMatrix = glm::lookAt(position, position + direction, glm::vec3(0, 1, 0));
+
+}

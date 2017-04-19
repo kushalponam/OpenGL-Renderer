@@ -71,12 +71,18 @@ public:
 	void OnSpecialKeyDown(int key, int x, int y){};
 	void OnSpecialKeyUp(int key, int x, int y){};
 
-	
+	void SetDirection(glm::vec3 i_direction);
+	void SetCutoff(float i_radians) { cutoff = glm::cos(i_radians); }
+	float GetCutoff() const { return cutoff; }
+
+	void SetOuterCutoff(float i_radians) { outerCutoff = glm::cos(i_radians); }
+	float GetOuterCutoff()const { return outerCutoff; }
 
 private:
 	RenderableObject* lightMesh;
 
-	
+	float cutoff;
+	float outerCutoff;
 
 	float radius;
 	float theta;
