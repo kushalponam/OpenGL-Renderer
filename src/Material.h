@@ -23,6 +23,8 @@ public:
 	float GetMetallic() const { return metallic; }
 	float GetRoughness() const { return roughness; }
 
+	void LoadTexture(std::string texName);
+
 	void LoadDiffuseTexture(std::string texName);
 	void LoadSpecularTexture(std::string texName);
 

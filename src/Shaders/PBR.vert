@@ -16,6 +16,8 @@ struct Light{
 	vec3 Light_Pos;
 	mat4 LightMatrix;
 	vec3 Light_Col;
+	vec3 Light_dir;
+	float cutoff;
 };
 uniform Light lights[MAXLIGHTS];
 
@@ -25,11 +27,14 @@ out LightOutData{
 	vec3 LightPos_WorldSpace;
 	vec4 FragPosLightSpace;
 	vec3 Light_Col;
+	vec3 SpotLightDirection;
+	float cutoff;
 }fs_Out[MAXLIGHTS];
 
 // V = Eye Dir, L = Light Dir, N = Normal , H = halfVector
 
 out vec3 Normal;
+out vec3 Normal_World;
 out vec2 UV;
 out vec3 FragPos;
 out vec3 ViewDirection;
@@ -49,7 +54,10 @@ void CalculateLightData(vec3 vertexpos_cameraspace, vec3 EyeDirection ,vec3 frag
 		fs_Out[i].FragPosLightSpace = lights[i].LightMatrix * vec4(fragPos,1.0f);
 
 		fs_Out[i].Light_Col = lights[i].Light_Col;
-	
+
+		fs_Out[i].SpotLightDirection = lights[i].Light_dir;
+		
+		fs_Out[i].cutoff = lights[i].cutoff;
 	}
 }
 
@@ -74,4 +82,6 @@ void main()
 	UV = vec2(TextureCoord);
 	ViewDirection = normalize(EyeDirection);
 	view = View;
+
+
 }

@@ -27,26 +27,36 @@ void PBRShader::RegisterUniforms()
 	program.RegisterUniform(3, "Model");
 	program.RegisterUniform(4, "View");
 
-	// Reserved until 13 for 2 more lights
+	// Reserved until 28 for 2 more lights
 	Scene *scene = Scene::getScene();
 	std::vector<Light*> lights = scene->GetLights();
 	for (unsigned int i = 0; i < lights.size(); i++) {
 		std::string number = std::to_string(i);
-		int nextIter = i * 4;
+		int nextIter = i * 6;
 		program.RegisterUniform(5 + nextIter, ("lights[" + number + "].Light_Pos").c_str());
 		program.RegisterUniform(6 + nextIter, ("lights[" + number + "].LightMatrix").c_str());
 		program.RegisterUniform(7 + nextIter, ("lights[" + number + "].Light_Col").c_str());
 		program.RegisterUniform(8 + nextIter, ("ShadowMap[" + number + "]").c_str());
+		program.RegisterUniform(9 + nextIter, ("lights[" + number + "].Light_dir").c_str());
+		program.RegisterUniform(10 + nextIter, ("lights[" + number + "].cutoff").c_str());
 	}
 
 	// in fragment Shader
-	program.RegisterUniform(14, "cubeMap");
+	/*program.RegisterUniform(14, "cubeMap");
 	program.RegisterUniform(15, "albedo");
 	program.RegisterUniform(16, "metallic");
 	program.RegisterUniform(17, "roughness");
 	program.RegisterUniform(18, "irradianceMap");
 	program.RegisterUniform(19, "specularFilter");
-	program.RegisterUniform(20, "brdfFilter");
+	program.RegisterUniform(20, "brdfFilter");*/
+	program.RegisterUniform(29, "cubeMap");
+	program.RegisterUniform(30, "albedo");
+	program.RegisterUniform(31, "metallic");
+	program.RegisterUniform(32, "roughness");
+	program.RegisterUniform(33, "irradianceMap");
+	program.RegisterUniform(34, "specularFilter");
+	program.RegisterUniform(35, "brdfFilter");
+
 
 }
 
@@ -67,21 +77,25 @@ void PBRShader::Init()
 
 	for (unsigned int i = 0; i < lights.size(); i++) {
 		glm::vec3 pos = lights[i]->GetPosition();
-		int nextIter = i * 4;
+		int nextIter = i * 6;
 		program.SetUniform(5 + nextIter, pos.x, pos.y, pos.z);
-
-		program.SetUniform(7 + nextIter, lights[i]->GetColor().x, lights[i]->GetColor().y, lights[i]->GetColor().z);
 
 		glm::mat4 lprojectionMatrix = lights[i]->GetProjectionMatrix();
 		glm::mat4 lviewMatrix = lights[i]->GetViewMatrix();
 		glm::mat4 lMVP = lprojectionMatrix*lviewMatrix;
 
 		program.SetUniformMatrix4(6 + nextIter, &lMVP[0][0]);
+		program.SetUniform(7 + nextIter, lights[i]->GetColor().x, lights[i]->GetColor().y, lights[i]->GetColor().z);
+
+		glm::vec3 dir = lights[i]->GetDirection();
+		program.SetUniform(9 + nextIter, dir.x, dir.y, dir.z);
+
+		program.SetUniform(10 + nextIter, glm::cos(glm::radians(12.5f)));
 	}
 
-	program.SetUniform(18, 5);
-	program.SetUniform(19, 6);
-	program.SetUniform(20, 7);
+	program.SetUniform(33, 5);
+	program.SetUniform(34, 6);
+	program.SetUniform(35, 7);
 }
 
 
@@ -139,9 +153,9 @@ void PBRShader::Render()
 		program.SetUniformMatrix3(2, &normalMatrix[0][0]);
 		program.SetUniformMatrix4(3, &modelMatrix[0][0]);
 		
-		program.SetUniform(15, albedo.x, albedo.y, albedo.z);
-		program.SetUniform(16, mettalic);
-		program.SetUniform(17, roughness);
+		program.SetUniform(30, albedo.x, albedo.y, albedo.z);
+		program.SetUniform(31, mettalic);
+		program.SetUniform(32, roughness);
 
 		/*scene->GetSkyBox()->ActivateCubeMap();
 		program.SetUniform(11, 0);*/

@@ -94,7 +94,7 @@ void Irradiance::Init()
 		}
 	}
 
-	projMatrix = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 50.0f);
+	projMatrix = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 500.0f);
 
 	captureViews[0] = glm::lookAt(glm::vec3(0, 0, 0), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0, -1, 0));
 	captureViews[1] = glm::lookAt(glm::vec3(0, 0, 0), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0, -1, 0));
@@ -149,7 +149,7 @@ void Irradiance::CaptureEnvironment()
 
 	glViewport(0, 0, 1024, 1024);
 	
-	glm::mat4 projection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 50.0f);
+	glm::mat4 projection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 500.0f);
 	
 	camera->SetProjectionMatrix(projection);
 	//scene->ShadowPass();

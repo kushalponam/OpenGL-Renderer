@@ -43,14 +43,14 @@ void Camera::OnMouseMove(int x, int y)
 		float tempx = LeftButtonData.position.x;
 		tempx -= x;
 
-		direction = glm::mat3(glm::rotate(tempx*0.05f, upVector)) * direction;
+		direction = glm::mat3(glm::rotate(tempx * 0.005f, upVector)) * direction;
 		LeftButtonData.position = glm::vec2(x, y);
 	}
 	else if (RightButtonData.buttondown) {
 		float tempy = RightButtonData.position.y;
 		tempy -= y;
 		glm::vec3 rotateAround = glm::cross(direction, upVector);
-		direction = glm::mat3(glm::rotate(tempy*0.05f, rotateAround)) * direction;
+		direction = glm::mat3(glm::rotate(tempy * 0.005f, rotateAround)) * direction;
 		RightButtonData.position = glm::vec2(x, y);
 	}
 }

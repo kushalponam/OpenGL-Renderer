@@ -61,6 +61,9 @@ private:
 	std::vector<Light*> lights;
 	std::vector<Material*> matList;
 
+	float roomWidth;
+	float roomHeight;
+
 	Skybox *skybox;
 	MeshLoader *meshLoader;
 	Irradiance *irradiance;

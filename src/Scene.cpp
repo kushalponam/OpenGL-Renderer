@@ -12,6 +12,9 @@ void Scene::Init()
 
 	meshLoader = new MeshLoader();
 
+	roomWidth = 60;
+	roomHeight = 30;
+
 	skybox = new Skybox("city/", 2048, 2048, "cubemap_posx.png", "cubemap_negx.png", "cubemap_posy.png", "cubemap_negy.png",
 		"cubemap_posz.png", "cubemap_negz.png");
 
@@ -31,7 +34,7 @@ void Scene::Init()
 	dragonSmoothMat->SetRoughness(0.1f);
 
 	Material *dragonMiddleMat = new Material();
-	dragonMiddleMat->SetAlbedo(glm::vec3(1.0f, 0.6f, 0.0f));
+	dragonMiddleMat->SetAlbedo(glm::vec3(0.75f, 0.75f, 0.75f));
 	dragonMiddleMat->SetMetallic(0.5f);
 	dragonMiddleMat->SetRoughness(0.5f);
 
@@ -69,25 +72,7 @@ void Scene::Init()
 	matList.push_back(blueMat);
 	matList.push_back(purple);
 
-	//RenderableObject *teapot = new RenderableObject("newTeapot.obj");
-	RenderableObject *dragon = new RenderableObject("dragon/dragon.obj");
-	dragon->SetTranslation(glm::vec3(-20.0f, -5.0f, 20.0f));
-	//dragon->SetScale(glm::vec3(0.6f, 0.6f, 0.6f));
-	dragon->SetScale(glm::vec3(20, 20, 20));
-	dragon->SetMaterial(dragonRoughMat);
-
-	RenderableObject *dragon2 = new RenderableObject("dragon/dragon.obj");
-	dragon2->SetTranslation(glm::vec3(20.0f, -5.0f, 20.0f));
-	//dragon2->SetScale(glm::vec3(0.6f, 0.6f, 0.6f));
-	dragon2->SetScale(glm::vec3(20, 20, 20));
-	dragon2->SetMaterial(dragonSmoothMat);
-
-	RenderableObject *dragon3 = new RenderableObject("dragon/dragon.obj");
-	dragon3->SetTranslation(glm::vec3(0.0f, -5.0f, 20.0f));
-	//dragon3->SetScale(glm::vec3(0.6f, 0.6f, 0.6f));
-	dragon3->SetScale(glm::vec3(20, 20, 20));
-	dragon3->SetMaterial(dragonMiddleMat);
-
+	
 	//meshLoader->LoadMesh("light/light.obj");
 	RenderableObject *lightMesh = new RenderableObject("light/light.obj");
 	lightMesh->SetTranslation(glm::vec3(-15.0f, 29.0f, 10.0f));
@@ -123,56 +108,54 @@ void Scene::Init()
 	//light1->SetColor(glm::vec3(0, 0, 0));
 	AddLight(light1);
 
+	
+
 	RenderableObject *bottomWall = new RenderableObject(RenderableObject::Quad);
-	bottomWall->SetTranslation(glm::vec3(0.0f, -10.0f, 20.0f));
+	bottomWall->SetTranslation(glm::vec3(0.0f, -roomHeight/2, 20.0f));
 	bottomWall->SetRotation(glm::radians(90.0f), glm::vec3(1, 0, 0));
-	bottomWall->SetScale(glm::vec3(30, 20, 1));
+	bottomWall->SetScale(glm::vec3(roomWidth, roomWidth, 1));
 	bottomWall->SetMaterial(whiteMat);
 
 	RenderableObject *topWall = new RenderableObject(RenderableObject::Quad);
-	topWall->SetTranslation(glm::vec3(0.0f, 30.0f, 20.0f));
+	topWall->SetTranslation(glm::vec3(0.0f, roomHeight + roomHeight/2, 20.0f));
 	topWall->SetRotation(glm::radians(270.0f), glm::vec3(1, 0, 0));
-	topWall->SetScale(glm::vec3(30, 20, 1));
+	topWall->SetScale(glm::vec3(roomWidth, roomWidth, 1));
 	topWall->SetMaterial(whiteMat);
 
-	RenderableObject *backWall = new RenderableObject(RenderableObject::Quad);
-	backWall->SetTranslation(glm::vec3(0.0f, 10.0f, 40.0f));
-	backWall->SetScale(glm::vec3(30,20,1));
-	backWall->SetMaterial(whiteMat);
-
-
 	RenderableObject *leftWall = new RenderableObject(RenderableObject::Quad);
-	leftWall->SetTranslation(glm::vec3(30.0f, 10.0f, 20.0f));
+	leftWall->SetTranslation(glm::vec3(roomWidth, roomHeight/2, 20.0f));
 	leftWall->SetRotation(glm::radians(90.0f), glm::vec3(0, 1, 0));
-	leftWall->SetScale(glm::vec3(20, 20, 1));
+	leftWall->SetScale(glm::vec3(roomWidth, roomHeight, 1));
 	leftWall->SetMaterial(redMat);
 
 	RenderableObject *rightWall = new RenderableObject(RenderableObject::Quad);
-	rightWall->SetTranslation(glm::vec3(-30.0f, 10.0f, 20.0f));
+	rightWall->SetTranslation(glm::vec3(-roomWidth, roomHeight / 2, 20.0f));
 	rightWall->SetRotation(glm::radians(270.0f), glm::vec3(0, 1, 0));
-	rightWall->SetScale(glm::vec3(20, 20, 1));
+	rightWall->SetScale(glm::vec3(roomWidth, roomHeight, 1));
 	rightWall->SetMaterial(greenMat);
+
+	RenderableObject *backWall = new RenderableObject(RenderableObject::Quad);
+	backWall->SetTranslation(glm::vec3(0.0f, roomHeight/2, 20.0f + roomWidth));
+	backWall->SetScale(glm::vec3(roomWidth, roomHeight, 1));
+	backWall->SetMaterial(whiteMat);
 
 	
 	DepthShader* depthShader = new DepthShader("src/Shaders/Depth.vert", "src/Shaders/Depth.frag");
 	depthShader->Init();
-	depthShader->BindObject((Object*)dragon);
+	/*depthShader->BindObject((Object*)dragon);
 	depthShader->BindObject((Object*)dragon2);
-	depthShader->BindObject((Object*)dragon3);
+	depthShader->BindObject((Object*)dragon3);*/
 	depthShaderList.push_back(depthShader);
 
 
 	//BlinnShader* blinn = new BlinnShader("src/Shaders/Blinn.vert", "src/Shaders/Blinn_noTexture.frag");
 	PBRShader* blinn = new PBRShader("src/Shaders/PBR.vert", "src/Shaders/PBR.frag");
 	blinn->Init();
-	blinn->BindObject((Object*)dragon);
-	blinn->BindObject((Object*)dragon2);
-	blinn->BindObject((Object*)dragon3);
 	blinn->BindObject((Object*)lightMesh);
 	blinn->BindObject((Object*)lightMesh1);
 	blinn->BindObject((Object*)bottomWall);
-	blinn->BindObject((Object*)backWall);
 	blinn->BindObject((Object*)leftWall);
+	blinn->BindObject((Object*)backWall);
 	blinn->BindObject((Object*)rightWall);
 	blinn->BindObject((Object*)topWall);
 	ShaderList.push_back(blinn);
@@ -181,10 +164,9 @@ void Scene::Init()
 	basic->Init();
 	basic->BindObject((Object*)bottomWall);
 	basic->BindObject((Object*)leftWall);
+	basic->BindObject((Object*)backWall);
 	basic->BindObject((Object*)rightWall);
 	basic->BindObject((Object*)topWall);
-	basic->BindObject((Object*)backWall);
-	basic->BindObject((Object*)dragon2);
 	envList.push_back(basic);
 	
 	for(unsigned int i=0;i<lights.size();i++)
