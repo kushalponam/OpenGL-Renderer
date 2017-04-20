@@ -37,6 +37,7 @@ public:
 	GLuint GetTextureBuffer(std::string texName) {return TextureBuffers[lib_id[texName]];}
 	int GetTextureID(std::string texName) { return lib_id[texName]; }
 	void BindTexture(std::string textureName);
+	void UnBind(std::string texName);
 private:
 	TexLibrary() {};
 	static TexLibrary* t_Instance;

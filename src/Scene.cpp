@@ -70,6 +70,34 @@ void Scene::Init()
 	PBRGunMat->SetMetallicUnit(metallicUnit);
 	PBRGunMat->SetRoughnessUnit(roughnessUnit);
 
+	texLib->GetTexture("bamboo_a.png", 2048, 2048);
+	texLib->GetTexture("bamboo_m.png", 2048, 2048);
+	texLib->GetTexture("bamboo_r.png", 2048, 2048);
+	int albedoUnit1 = texLib->GetTextureID("bamboo_a.png");
+	int metallicUnit1 = texLib->GetTextureID("bamboo_m.png");
+	int roughnessUnit1 = texLib->GetTextureID("bamboo_r.png");
+	Material *PBRGoldMat = new Material();
+	PBRGoldMat->SetHasTexture(true);
+	PBRGoldMat->SetAlbedoName("bamboo_a.png");
+	PBRGoldMat->SetMetallicName("bamboo_m.png");
+	PBRGoldMat->SetRoughnessName("bamboo_r.png");
+	PBRGoldMat->SetAlbedoUnit(albedoUnit1);
+	PBRGoldMat->SetMetallicUnit(metallicUnit1);
+	PBRGoldMat->SetRoughnessUnit(roughnessUnit1);
+
+
+	texLib->GetTexture("sand_a.png", 2048, 2048);
+	texLib->GetTexture("sand_m.png", 2048, 2048);
+	texLib->GetTexture("sand_r.png", 2048, 2048);
+	Material *PBRSandMat = new Material();
+	PBRSandMat->SetHasTexture(true);
+	PBRSandMat->SetAlbedoName("sand_a.png");
+	PBRSandMat->SetMetallicName("sand_m.png");
+	PBRSandMat->SetRoughnessName("sand_r.png");
+	PBRSandMat->SetAlbedoUnit(texLib->GetTextureID("sand_a.png"));
+	PBRSandMat->SetMetallicUnit(texLib->GetTextureID("sand_m.png"));
+	PBRSandMat->SetRoughnessUnit(texLib->GetTextureID("sand_r.png"));
+
 
 	Material *whiteMat = new Material();
 	whiteMat->SetAlbedo(glm::vec3(1, 1, 1));
@@ -103,6 +131,8 @@ void Scene::Init()
 	matList.push_back(armadilloMiddleMat);
 	matList.push_back(armadilloFrontMat);
 	matList.push_back(PBRGunMat);
+	matList.push_back(PBRGoldMat);
+	matList.push_back(PBRSandMat);
 	matList.push_back(whiteMat);
 	matList.push_back(redMat);
 	matList.push_back(greenMat);
@@ -154,6 +184,18 @@ void Scene::Init()
 	PbrGun->SetScale(glm::vec3(8, 8, 8));
 	//PbrGun->SetRotation(glm::radians(45.0f), glm::vec3(0, 1, 0));
 	PbrGun->SetMaterial(PBRGunMat);
+
+	RenderableObject *PbrGold = new RenderableObject("Sphere/Sphere.obj");
+	PbrGold->SetTranslation(glm::vec3(-roomWidth + 15, -10, 5.0f));
+	PbrGold->SetScale(glm::vec3(8, 8, 8));
+	PbrGold->SetMaterial(PBRGoldMat);
+
+	RenderableObject *PbrSand = new RenderableObject("Sphere/Sphere.obj");
+	PbrSand->SetTranslation(glm::vec3(-roomWidth + 15, -10, -15.0f));
+	PbrSand->SetScale(glm::vec3(8, 8, 8));
+	PbrSand->SetMaterial(PBRSandMat);
+	
+
 //################################################ MODELS LOAD END #####################################################
 
 //################################################LIGHTS MESH START##################################################
@@ -253,6 +295,8 @@ void Scene::Init()
 	depthShader->BindObject((Object*)armadilloMiddle);
 	depthShader->BindObject((Object*)armadilloFront);
 	depthShader->BindObject((Object*)PbrGun);
+	depthShader->BindObject((Object*)PbrGold);
+	depthShader->BindObject((Object*)PbrSand);
 	depthShaderList.push_back(depthShader);
 
 
@@ -266,6 +310,8 @@ void Scene::Init()
 	blinn->BindObject((Object*)armadilloMiddle);
 	blinn->BindObject((Object*)armadilloFront);
 	blinn->BindObject((Object*)PbrGun);
+	blinn->BindObject((Object*)PbrGold);
+	blinn->BindObject((Object*)PbrSand);
 	blinn->BindObject((Object*)lightMesh);
 	blinn->BindObject((Object*)lightMesh1);
 	blinn->BindObject((Object*)lightMesh2);

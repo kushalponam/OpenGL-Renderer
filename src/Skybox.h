@@ -3,7 +3,7 @@
 
 #include "Core.h"
 
-class Skybox:GLObject {
+class Skybox:GLObject ,public KeyboardInput{
 
 public:
 	/*
@@ -25,6 +25,11 @@ public:
 	void Update();
 	void Render();
 	void CleanUp();
+
+	void OnKeyDown(unsigned char key, int x, int y);
+	void OnKeyUp(unsigned char key, int x, int y) {};
+	void OnSpecialKeyDown(int key, int x, int y) {};
+	void OnSpecialKeyUp(int key, int x, int y) {};
 
 	void ActivateCubeMap();
 	void ReflectSkybox(float direction);

@@ -100,7 +100,7 @@ void main()
 {
 	vec3 F0 = vec3(0.04);
 	
-	vec3 albedoTexCol = texture2D(albedoTexture,UV).rgb;
+	vec3 albedoTexCol = pow(texture2D(albedoTexture,UV).rgb, vec3(2.2));
 	float metallicTexCol = texture2D(metallicTexture,UV).r;
 	float roughnessTexCol = texture2D(roughnessTexture,UV).r;
 	float roughness_mix = roughness + roughnessTexCol;
@@ -146,9 +146,9 @@ void main()
 		vec3 F = fresnelSchilick(NdotV,F0,roughness_mix);
 		vec3 kS = F;
 		vec3 kD = vec3(1.0) - kS;
-		kD *= 1.0 - (metallic+metallicTexCol);
+		kD *= 1.0 - (metallic + metallicTexCol);
 
-		finalKD += kD * radiance;
+		finalKD += kD * radiance + 0.001;
 
 		vec3 nominator = NDF * G * F;
 		float denominator = 4 * NdotV * NdotL + 0.001;
@@ -173,7 +173,7 @@ void main()
 
 	finalKD = finalKD/(finalKD  + vec3(1.0));
 	
-	vec3 diffuse = irradiance * albedo;
+	vec3 diffuse = irradiance * (albedo + albedoTexCol);
 	vec3 ambient = finalKD * diffuse + specular ;
 
 	vec3 color = ambient + Lo;

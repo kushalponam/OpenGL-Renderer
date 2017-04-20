@@ -38,9 +38,11 @@ Skybox::Skybox(std::string folderPath, unsigned int imageWidth, unsigned int ima
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-
+	Scene* scene = Scene::getScene();
+	scene->GetInputHandler()->AddToKeyboardInput(this);
 }
 
+float roughness = 0.0;
 void Skybox::Init()
 {
 
@@ -69,9 +71,11 @@ void Skybox::Init()
 	program.RegisterUniform(1, "projectionMatrix");
 	program.RegisterUniform(2, "cubeMap");
 	program.RegisterUniform(3, "viewMatrix");
+	program.RegisterUniform(4, "roughness");
 	program.Bind();
 
-	program.SetUniform(2, 8);
+	program.SetUniform(2, 0);
+	program.SetUniform(4, 0);
 
 	glGenBuffers(1, &cubeMeshBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, cubeMeshBuffer);
@@ -127,6 +131,39 @@ void Skybox::CleanUp()
 
 	//delete cubeMesh;
 	//cubeMesh = nullptr;
+}
+
+void Skybox::OnKeyDown(unsigned char key, int x, int y)
+{
+	switch (key)
+	{
+
+	case 'z':
+		program.Bind();
+		program.SetUniform(2, 8);
+		break;
+	case 'x':
+		program.Bind();
+		program.SetUniform(2, 5);
+		break;
+	case 'c':
+		program.Bind();
+		program.SetUniform(2, 6);
+		break;
+	case 'v':
+		program.Bind();
+		roughness += 0.2f;
+		program.SetUniform(4, roughness);
+		break;
+	case 'r':
+		program.Bind();
+		roughness = 0.0f;
+		program.SetUniform(4, roughness);
+		program.SetUniform(2, 0);
+		break;
+	default:
+		break;
+	}
 }
 
 void Skybox::ActivateCubeMap()

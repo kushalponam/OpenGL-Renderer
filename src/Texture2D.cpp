@@ -56,6 +56,14 @@ void TexLibrary::BindTexture(std::string textureName)
 
 }
 
+void TexLibrary::UnBind(std::string texName)
+{
+	if (texName == "")return;
+	int texUnit = lib_id[texName];
+	glActiveTexture(GL_TEXTURE0 + lib_id[texName]);
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 
 Texture2D::Texture2D(std::string texName, unsigned int i_width, unsigned int i_height)
 {

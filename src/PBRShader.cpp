@@ -168,6 +168,7 @@ void PBRShader::Render()
 			program.SetUniform(42, obj->GetMaterial()->GetRoughnessUnit());
 		}else
 		{
+			
 			glActiveTexture(GL_TEXTURE0 + 10);
 			glBindTexture(GL_TEXTURE_2D, 0);
 			glActiveTexture(GL_TEXTURE0 + 11);
@@ -175,6 +176,19 @@ void PBRShader::Render()
 			glActiveTexture(GL_TEXTURE0 + 12);
 			glBindTexture(GL_TEXTURE_2D, 0);
 
+			glActiveTexture(GL_TEXTURE0 + 13);
+			glBindTexture(GL_TEXTURE_2D, 0);
+			glActiveTexture(GL_TEXTURE0 + 14);
+			glBindTexture(GL_TEXTURE_2D, 0);
+			glActiveTexture(GL_TEXTURE0 + 15);
+			glBindTexture(GL_TEXTURE_2D, 0);
+
+			glActiveTexture(GL_TEXTURE0 + 16);
+			glBindTexture(GL_TEXTURE_2D, 0);
+			glActiveTexture(GL_TEXTURE0 + 17);
+			glBindTexture(GL_TEXTURE_2D, 0);
+			glActiveTexture(GL_TEXTURE0 + 18);
+			glBindTexture(GL_TEXTURE_2D, 0);
 		}
 
 		glDrawArrays(GL_TRIANGLES, 0, obj->GetVertexIndicesSize());

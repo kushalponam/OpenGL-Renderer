@@ -48,6 +48,10 @@ public:
 	Texture2D* GetSpecularTexture() { return specularTexture; };
 	cy::TriMesh::Mtl GetMTL();
 
+	void UnBindAlbedo();
+	void UnBindMetallic();
+	void UnBindRoughness();
+
 	void ActivateDiffuseTexture();
 	void ActivateSpecularTexture();
 	bool HasTexture() { return hasTexture; }

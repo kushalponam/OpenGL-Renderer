@@ -44,6 +44,12 @@ cy::TriMesh::Mtl Material::GetMTL()
 	return mtl;
 }
 
+void Material::UnBindAlbedo()
+{
+	TexLibrary *texLib = TexLibrary::getInstance();
+	GLuint tex = texLib->GetTextureBuffer(albedoName);
+}
+
 void Material::ActivateDiffuseTexture()
 {
 	if (diffuseTexture == nullptr) return;
