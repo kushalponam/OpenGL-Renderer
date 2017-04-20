@@ -33,7 +33,7 @@ public:
 	void Update();
 	void Render();
 	void CleanUp();
-	void ShadowPass();
+	
 	Camera* GetCamera() const;
 	
 	Skybox* GetSkyBox() const;

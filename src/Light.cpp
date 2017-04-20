@@ -14,7 +14,7 @@ void SpotLight::Init()
 {
 	position = lightMesh->GetPosition();
 	
-	projectionMatrix = glm::perspective(glm::radians(100.0f), 1024.0f / 768.0f, 1.0f, 50.0f);
+	projectionMatrix = glm::perspective(glm::radians(100.0f), 1024.0f / 768.0f, 30.0f, 70.0f);
 	direction = glm::normalize(glm::vec3(0,-10,20) - position);
 	viewMatrix = glm::lookAt(position , position + direction, glm::vec3(0, 1, 0));
 	
@@ -32,8 +32,8 @@ void SpotLight::Update()
 {
 	modelMatrix = lightMesh->GetModelMatrix();
 
-	glm::vec3 dir = glm::vec3(0, -10, 20) - position;
-	viewMatrix = glm::lookAt(position, position + dir, glm::vec3(0, 1, 0));
+	/*glm::vec3 dir = glm::vec3(0, -10, 20) - position;
+	viewMatrix = glm::lookAt(position, position + dir, glm::vec3(0, 1, 0));*/
 
 }
 

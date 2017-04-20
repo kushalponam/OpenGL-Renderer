@@ -71,7 +71,7 @@ void Skybox::Init()
 	program.RegisterUniform(3, "viewMatrix");
 	program.Bind();
 
-	program.SetUniform(2, 5);
+	program.SetUniform(2, 8);
 
 	glGenBuffers(1, &cubeMeshBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, cubeMeshBuffer);

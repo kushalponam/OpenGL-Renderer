@@ -23,20 +23,20 @@ void Scene::Init()
 	irradiance = new Irradiance(8, 32, 32,256,256);
 	irradiance->Init();
 	
-	Material *dragonRoughMat = new Material();
-	dragonRoughMat->SetAlbedo(glm::vec3(1.0f, 0.6f, 0));
-	dragonRoughMat->SetMetallic(0.1f);
-	dragonRoughMat->SetRoughness(0.9f);
+	Material *lucyMat = new Material();
+	lucyMat->SetAlbedo(glm::vec3(0.83f,0.68f,0.215f));
+	lucyMat->SetMetallic(0.9f);
+	lucyMat->SetRoughness(0.5f);
 
-	Material *dragonSmoothMat = new Material();
-	dragonSmoothMat->SetAlbedo(glm::vec3(1.0f, 0.6f, 0));
-	dragonSmoothMat->SetMetallic(0.1f);
-	dragonSmoothMat->SetRoughness(0.1f);
+	Material *lucyLeftMat = new Material();
+	lucyLeftMat->SetAlbedo(glm::vec3(0.83f, 0.68f, 0.215f));
+	lucyLeftMat->SetMetallic(0.9f);
+	lucyLeftMat->SetRoughness(0.2f);
 
-	Material *dragonMiddleMat = new Material();
-	dragonMiddleMat->SetAlbedo(glm::vec3(0.75f, 0.75f, 0.75f));
-	dragonMiddleMat->SetMetallic(0.5f);
-	dragonMiddleMat->SetRoughness(0.5f);
+	Material *lucyRightMat = new Material();
+	lucyRightMat->SetAlbedo(glm::vec3(0.83f, 0.68f, 0.215f));
+	lucyRightMat->SetMetallic(0.9f);
+	lucyRightMat->SetRoughness(0.9f);
 
 	Material *whiteMat = new Material();
 	whiteMat->SetAlbedo(glm::vec3(1, 1, 1));
@@ -63,31 +63,50 @@ void Scene::Init()
 	purple->SetMetallic(0.1f);
 	purple->SetRoughness(0.9f);
 
-	matList.push_back(dragonRoughMat);
-	matList.push_back(dragonSmoothMat);
-	matList.push_back(dragonMiddleMat);
+	matList.push_back(lucyMat);
+	matList.push_back(lucyLeftMat);
+	matList.push_back(lucyRightMat);
 	matList.push_back(whiteMat);
 	matList.push_back(redMat);
 	matList.push_back(greenMat);
 	matList.push_back(blueMat);
 	matList.push_back(purple);
 
+
+	RenderableObject* lucy = new RenderableObject("lucy/Alucy.obj");
+	lucy->SetTranslation(glm::vec3(0.0f,-roomHeight/2,60.0f));
+	lucy->SetScale(glm::vec3(0.04f, 0.04f, 0.04f));
+	lucy->SetRotation(glm::radians(-130.0f), glm::vec3(0, 1, 0));
+	lucy->SetMaterial(lucyMat);
+
+	RenderableObject* lucyleft = new RenderableObject("lucy/Alucy.obj");
+	lucyleft->SetTranslation(glm::vec3(roomWidth-30, -roomHeight / 2, 60.0f));
+	lucyleft->SetScale(glm::vec3(0.04f, 0.04f, 0.04f));
+	lucyleft->SetRotation(glm::radians(-130.0f), glm::vec3(0, 1, 0));
+	lucyleft->SetMaterial(lucyLeftMat);
+
+	RenderableObject* lucyRight = new RenderableObject("lucy/Alucy.obj");
+	lucyRight->SetTranslation(glm::vec3(-roomWidth+30, -roomHeight / 2, 60.0f));
+	lucyRight->SetScale(glm::vec3(0.04f, 0.04f, 0.04f));
+	lucyRight->SetRotation(glm::radians(-130.0f), glm::vec3(0, 1, 0));
+	lucyRight->SetMaterial(lucyRightMat);
+
 	
-	//meshLoader->LoadMesh("light/light.obj");
+	
 	RenderableObject *lightMesh = new RenderableObject("light/light.obj");
-	lightMesh->SetTranslation(glm::vec3(-15.0f, 29.0f, 10.0f));
+	lightMesh->SetTranslation(glm::vec3(-15.0f, 40, 10.0f));
 	lightMesh->SetRotation(glm::radians(270.0f), glm::vec3(1, 0, 0));
 	lightMesh->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
 	lightMesh->SetMaterial(whiteMat);
 
 	RenderableObject *lightMesh1 = new RenderableObject("light/light.obj");
-	lightMesh1->SetTranslation(glm::vec3(15.0f, 29.0f, 10.0f));
+	lightMesh1->SetTranslation(glm::vec3(15.0f, 40, 10.0f));
 	lightMesh1->SetRotation(glm::radians(270.0f), glm::vec3(1, 0, 0));
 	lightMesh1->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
 	lightMesh1->SetMaterial(whiteMat);
 	
 	RenderableObject *lightMesh2 = new RenderableObject("light/light.obj");
-	lightMesh2->SetTranslation(glm::vec3(0.0f, 29.0f, 10.0f));
+	lightMesh2->SetTranslation(glm::vec3(0.0f, 40, 10.0f));
 	lightMesh2->SetRotation(glm::radians(270.0f), glm::vec3(1, 0, 0));
 	lightMesh2->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
 	lightMesh2->SetMaterial(whiteMat);
@@ -123,7 +142,7 @@ void Scene::Init()
 	SpotLight* light2 = new SpotLight(lightMesh2);
 	light2->Init();
 	light2->SetIntensity(30.0f);
-	light2->SetColor(glm::vec3(0.94f, 0.85f, 0.64f) * 25);
+	light2->SetColor(glm::vec3(1, 1, 1) * 25);
 	glm::vec3 dir2 = glm::vec3(0.0f, -roomHeight/2 + 10, roomWidth) - light2->GetPosition();
 	light2->SetDirection(dir2);
 	light2->SetCutoff(glm::radians(25.0f));
@@ -131,7 +150,6 @@ void Scene::Init()
 	AddLight(light2);
 
 	
-
 	RenderableObject *bottomWall = new RenderableObject(RenderableObject::Quad);
 	bottomWall->SetTranslation(glm::vec3(0.0f, -roomHeight/2, 20.0f));
 	bottomWall->SetRotation(glm::radians(90.0f), glm::vec3(1, 0, 0));
@@ -164,17 +182,21 @@ void Scene::Init()
 	
 	DepthShader* depthShader = new DepthShader("src/Shaders/Depth.vert", "src/Shaders/Depth.frag");
 	depthShader->Init();
-	/*depthShader->BindObject((Object*)dragon);
-	depthShader->BindObject((Object*)dragon2);
-	depthShader->BindObject((Object*)dragon3);*/
+	depthShader->BindObject((Object*)lucy);
+	depthShader->BindObject((Object*)lucyleft);
+	depthShader->BindObject((Object*)lucyRight);
 	depthShaderList.push_back(depthShader);
 
 
 	//BlinnShader* blinn = new BlinnShader("src/Shaders/Blinn.vert", "src/Shaders/Blinn_noTexture.frag");
 	PBRShader* blinn = new PBRShader("src/Shaders/PBR.vert", "src/Shaders/PBR.frag");
 	blinn->Init();
+	blinn->BindObject((Object*)lucy);
+	blinn->BindObject((Object*)lucyleft);
+	blinn->BindObject((Object*)lucyRight);
 	blinn->BindObject((Object*)lightMesh);
 	blinn->BindObject((Object*)lightMesh1);
+	blinn->BindObject((Object*)lightMesh2);
 	blinn->BindObject((Object*)bottomWall);
 	blinn->BindObject((Object*)leftWall);
 	blinn->BindObject((Object*)backWall);
@@ -226,13 +248,7 @@ void Scene::Update()
 	}
 }
 
-void Scene::ShadowPass()
-{
-	
 
-	
-
-}
 
 void Scene::Render()
 {
@@ -262,7 +278,7 @@ void Scene::Render()
 
 	skybox->Render();
 	for (unsigned int i = 0; i < lights.size(); i++) {
-		int nextIter = i * 4;
+		int nextIter = i * 7;
 		for (unsigned int j = 0; j < ShaderList.size(); j++) {
 
 			ShaderList[j]->SetUniform(8 + nextIter, 1 + i);

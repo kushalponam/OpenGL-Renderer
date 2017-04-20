@@ -123,7 +123,7 @@ void main()
 		
 		float epsilon = fs_in[i].cutoff - fs_in[i].outerCutoff;
 		float intensity = clamp( (theta - fs_in[i].outerCutoff) / epsilon , 0.0,1.0);
-		vec3 lightCol = (fs_in[i].Light_Col*intensity);
+		vec3 lightCol = (fs_in[i].Light_Col * intensity);
 		
 		radiance = lightCol * attenuation;
 		
@@ -153,7 +153,7 @@ void main()
 	
 	vec3 Normal_world = vec3( view * vec4(Normal,0.0));
 	
-	vec3 irradiance = texture(irradianceMap,Normal).rgb;
+	vec3 irradiance = texture(irradianceMap,Normal_world).rgb;
 	
 	vec2 brdf_1 = texture(brdfFilter, vec2(NdotV,roughness)).rg;
 

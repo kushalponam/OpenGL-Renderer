@@ -54,13 +54,13 @@ void BlinnShader::RegisterUniforms()
 		program.RegisterUniform(8 + nextIter, ("ShadowMap["+number+"]").c_str());
 	}
 
-	program.RegisterUniform(14, "kd");
+	program.RegisterUniform(17, "kd");
 	
 	// in fragment Shader
-	program.RegisterUniform(15, "SpecularStength");
-	program.RegisterUniform(16, "Shininess");
-	program.RegisterUniform(17, "AmbientIntensity");
-	program.RegisterUniform(18, "cubeMap");
+	program.RegisterUniform(18, "SpecularStength");
+	program.RegisterUniform(19, "Shininess");
+	program.RegisterUniform(20, "AmbientIntensity");
+	program.RegisterUniform(21, "cubeMap");
 	
 }
 
@@ -94,13 +94,13 @@ void BlinnShader::Init()
 	}
 
 	float SpecularStength(0.9f);
-	program.SetUniform(15, SpecularStength);
+	program.SetUniform(18, SpecularStength);
 
 	float Shinines = 20;
-	program.SetUniform(16, Shinines);
+	program.SetUniform(19, Shinines);
 
 	float ambient = 0.2f;
-	program.SetUniform(17, ambient);
+	program.SetUniform(20, ambient);
 
 }
 
@@ -176,7 +176,7 @@ void BlinnShader::Render() {
 		}
 	
 		glm::vec3 diffCol = obj->GetMaterial()->GetAlbedo();
-		program.SetUniform(14, diffCol.r, diffCol.g, diffCol.b);
+		program.SetUniform(17, diffCol.r, diffCol.g, diffCol.b);
 
 	
 		glDrawArrays(GL_TRIANGLES, 0, obj->GetVertexIndicesSize());
