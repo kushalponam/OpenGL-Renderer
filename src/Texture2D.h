@@ -11,12 +11,12 @@
 class Texture2D {
 
 public:
-	Texture2D(std::string texName);
+	Texture2D(std::string texName , unsigned int i_width, unsigned int i_height);
 	std::vector<unsigned char> GetTextureData() { return image; }
 
-	unsigned int GetTexWidth() { return width; }
-	unsigned int GetTexHeight() { return height; }
-	std::string GetName() { return name; }
+	unsigned int GetTexWidth() const { return width; }
+	unsigned int GetTexHeight() const { return height; }
+	std::string GetName()const { return name; }
 private:
 	unsigned int width, height;
 	std::vector<unsigned char>image;
@@ -33,16 +33,16 @@ public:
 		return t_Instance;
 	}
 	~TexLibrary();
-	Texture2D* GetTexture(std::string texName);
+	Texture2D* GetTexture(std::string texName, unsigned int i_width, unsigned int i_height);
 	GLuint GetTextureBuffer(std::string texName) {return TextureBuffers[lib_id[texName]];}
 	int GetTextureID(std::string texName) { return lib_id[texName]; }
-
+	void BindTexture(std::string textureName);
 private:
 	TexLibrary() {};
 	static TexLibrary* t_Instance;
-	int texNumber = 1;
+	int texNumber = 10;
 
-	GLuint TextureBuffers[10];
+	GLuint TextureBuffers[80];
 	std::map<std::string, Texture2D*> lib_tex;
 	std::map<std::string, int> lib_id;
 };

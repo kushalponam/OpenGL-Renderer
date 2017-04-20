@@ -31,12 +31,12 @@ void Material::SetDiffuseColor(glm::vec3 color)
 
 void Material::LoadDiffuseTexture(std::string texName)
 {
-	diffuseTexture = TexLibrary::getInstance()->GetTexture(texName);
+	//diffuseTexture = TexLibrary::getInstance()->GetTexture(texName);
 }
 
 void Material::LoadSpecularTexture(std::string texName)
 {
-	specularTexture = TexLibrary::getInstance()->GetTexture(texName);
+	//specularTexture = TexLibrary::getInstance()->GetTexture(texName);
 }
 
 cy::TriMesh::Mtl Material::GetMTL()

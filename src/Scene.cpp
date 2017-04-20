@@ -23,6 +23,8 @@ void Scene::Init()
 	irradiance = new Irradiance(8, 32, 32,256,256);
 	irradiance->Init();
 	
+	TexLibrary *texLib = TexLibrary::getInstance();
+
 	Material *lucyMat = new Material();
 	lucyMat->SetAlbedo(glm::vec3(0.83f,0.68f,0.215f));
 	lucyMat->SetMetallic(0.9f);
@@ -37,6 +39,37 @@ void Scene::Init()
 	lucyRightMat->SetAlbedo(glm::vec3(0.83f, 0.68f, 0.215f));
 	lucyRightMat->SetMetallic(0.9f);
 	lucyRightMat->SetRoughness(0.9f);
+
+	Material *armadilloBackMat = new Material();
+	armadilloBackMat->SetAlbedo(glm::vec3(0.83f, 0.68f, 0.215f));
+	armadilloBackMat->SetMetallic(0.1f);
+	armadilloBackMat->SetRoughness(0.2f);
+
+	Material *armadilloMiddleMat = new Material();
+	armadilloMiddleMat->SetAlbedo(glm::vec3(0.83f, 0.68f, 0.215f));
+	armadilloMiddleMat->SetMetallic(0.1f);
+	armadilloMiddleMat->SetRoughness(0.5f);
+
+	Material *armadilloFrontMat = new Material();
+	armadilloFrontMat->SetAlbedo(glm::vec3(0.83f, 0.68f, 0.215f));
+	armadilloFrontMat->SetMetallic(0.1f);
+	armadilloFrontMat->SetRoughness(0.9f);
+
+	texLib->GetTexture("iron_a.png", 2048, 2048);
+	texLib->GetTexture("iron_m.png", 2048, 2048);
+	texLib->GetTexture("iron_r.png", 2048, 2048);
+	int albedoUnit = texLib->GetTextureID("iron_a.png");
+	int metallicUnit = texLib->GetTextureID("iron_m.png");
+	int roughnessUnit = texLib->GetTextureID("iron_r.png");
+	Material *PBRGunMat = new Material();
+	PBRGunMat->SetHasTexture(true);
+	PBRGunMat->SetAlbedoName("iron_a.png");
+	PBRGunMat->SetMetallicName("iron_m.png");
+	PBRGunMat->SetRoughnessName("iron_r.png");
+	PBRGunMat->SetAlbedoUnit(albedoUnit);
+	PBRGunMat->SetMetallicUnit(metallicUnit);
+	PBRGunMat->SetRoughnessUnit(roughnessUnit);
+
 
 	Material *whiteMat = new Material();
 	whiteMat->SetAlbedo(glm::vec3(1, 1, 1));
@@ -66,13 +99,17 @@ void Scene::Init()
 	matList.push_back(lucyMat);
 	matList.push_back(lucyLeftMat);
 	matList.push_back(lucyRightMat);
+	matList.push_back(armadilloBackMat);
+	matList.push_back(armadilloMiddleMat);
+	matList.push_back(armadilloFrontMat);
+	matList.push_back(PBRGunMat);
 	matList.push_back(whiteMat);
 	matList.push_back(redMat);
 	matList.push_back(greenMat);
 	matList.push_back(blueMat);
 	matList.push_back(purple);
 
-
+//############################### MODELS LOAD ########################################################
 	RenderableObject* lucy = new RenderableObject("lucy/Alucy.obj");
 	lucy->SetTranslation(glm::vec3(0.0f,-roomHeight/2,60.0f));
 	lucy->SetScale(glm::vec3(0.04f, 0.04f, 0.04f));
@@ -91,16 +128,43 @@ void Scene::Init()
 	lucyRight->SetRotation(glm::radians(-130.0f), glm::vec3(0, 1, 0));
 	lucyRight->SetMaterial(lucyRightMat);
 
+	RenderableObject* armadilloBack = new RenderableObject("lucy/Alucy.obj");
+	armadilloBack->SetTranslation(glm::vec3(roomWidth - 10, -roomHeight / 2, 30.0f));
+	//armadilloBack->SetScale(glm::vec3(8, 8, 8));
+	armadilloBack->SetScale(glm::vec3(0.04f, 0.04f, 0.04f));
+	armadilloBack->SetRotation(glm::radians(-45.0f), glm::vec3(0, 1, 0));
+	armadilloBack->SetMaterial(armadilloBackMat);
+
+	RenderableObject* armadilloMiddle = new RenderableObject("lucy/Alucy.obj");
+	armadilloMiddle->SetTranslation(glm::vec3(roomWidth - 10, -roomHeight / 2, 10.0f));
+	//armadilloMiddle->SetScale(glm::vec3(8, 8, 8));
+	armadilloMiddle->SetScale(glm::vec3(0.04f, 0.04f, 0.04f));
+	armadilloMiddle->SetRotation(glm::radians(-45.0f), glm::vec3(0, 1, 0));
+	armadilloMiddle->SetMaterial(armadilloMiddleMat);
+
+	RenderableObject* armadilloFront = new RenderableObject("lucy/Alucy.obj");
+	armadilloFront->SetTranslation(glm::vec3(roomWidth - 10, -roomHeight / 2, -10.0f));
+	//armadilloFront->SetScale(glm::vec3(8, 8, 8));
+	armadilloFront->SetScale(glm::vec3(0.04f, 0.04f, 0.04f));
+	armadilloFront->SetRotation(glm::radians(-45.0f), glm::vec3(0, 1, 0));
+	armadilloFront->SetMaterial(armadilloFrontMat);
 	
-	
+	RenderableObject *PbrGun = new RenderableObject("Sphere/Sphere.obj");
+	PbrGun->SetTranslation(glm::vec3(-roomWidth + 15, -10, 25.0f));
+	PbrGun->SetScale(glm::vec3(8, 8, 8));
+	//PbrGun->SetRotation(glm::radians(45.0f), glm::vec3(0, 1, 0));
+	PbrGun->SetMaterial(PBRGunMat);
+//################################################ MODELS LOAD END #####################################################
+
+//################################################LIGHTS MESH START##################################################
 	RenderableObject *lightMesh = new RenderableObject("light/light.obj");
-	lightMesh->SetTranslation(glm::vec3(-15.0f, 40, 10.0f));
+	lightMesh->SetTranslation(glm::vec3(15.0f, 40, 10.0f));
 	lightMesh->SetRotation(glm::radians(270.0f), glm::vec3(1, 0, 0));
 	lightMesh->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
 	lightMesh->SetMaterial(whiteMat);
 
 	RenderableObject *lightMesh1 = new RenderableObject("light/light.obj");
-	lightMesh1->SetTranslation(glm::vec3(15.0f, 40, 10.0f));
+	lightMesh1->SetTranslation(glm::vec3(-15.0f, 40, 10.0f));
 	lightMesh1->SetRotation(glm::radians(270.0f), glm::vec3(1, 0, 0));
 	lightMesh1->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
 	lightMesh1->SetMaterial(whiteMat);
@@ -112,18 +176,11 @@ void Scene::Init()
 	lightMesh2->SetMaterial(whiteMat);
 
 
-	//Create camera and lights.
-	camera = new Camera();
-	camera->InitPerspectiveCamera(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 500.0f);
-	camera->SetPosition(glm::vec3(0, 0, -20));
-	camera->SetViewDirection(glm::vec3(0, 0, 1));
-	camera->Update();
-
 	SpotLight* light = new SpotLight(lightMesh);
 	light->Init();
 	light->SetIntensity(30.0f);
-	light->SetColor(glm::vec3(0.94f, 0.85f, 0.64f) * 25);
-	glm::vec3 dir = glm::vec3(roomWidth, 0.0f, 10.0f) - light->GetPosition();
+	light->SetColor(glm::vec3(1, 1, 1) * 25);
+	glm::vec3 dir = glm::vec3(roomWidth, -roomHeight / 2 + 10, 10.0f) - light->GetPosition();
 	light->SetDirection(dir);
 	light->SetCutoff(glm::radians(25.0f));
 	light->SetOuterCutoff(glm::radians(35.0f));
@@ -132,8 +189,8 @@ void Scene::Init()
 	SpotLight* light1 = new SpotLight(lightMesh1);
 	light1->Init();
 	light1->SetIntensity(30.0f);
-	light1->SetColor(glm::vec3(0.94f, 0.85f, 0.64f) * 25);
-	glm::vec3 dir1 = glm::vec3(-roomWidth, 0.0f, 10.0f) - light1->GetPosition();
+	light1->SetColor(glm::vec3(1, 1, 1) * 25);
+	glm::vec3 dir1 = glm::vec3(-roomWidth, -roomHeight / 2 + 10, 10.0f) - light1->GetPosition();
 	light1->SetDirection(dir1);
 	light1->SetCutoff(glm::radians(25.0f));
 	light1->SetOuterCutoff(glm::radians(35.0f));
@@ -148,7 +205,14 @@ void Scene::Init()
 	light2->SetCutoff(glm::radians(25.0f));
 	light2->SetOuterCutoff(glm::radians(35.0f));
 	AddLight(light2);
+//######################################### LIGHTS END ##################################################################
 
+	//Create camera and lights.
+	camera = new Camera();
+	camera->InitPerspectiveCamera(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 500.0f);
+	camera->SetPosition(glm::vec3(0, 0, -20));
+	camera->SetViewDirection(glm::vec3(0, 0, 1));
+	camera->Update();
 	
 	RenderableObject *bottomWall = new RenderableObject(RenderableObject::Quad);
 	bottomWall->SetTranslation(glm::vec3(0.0f, -roomHeight/2, 20.0f));
@@ -185,6 +249,10 @@ void Scene::Init()
 	depthShader->BindObject((Object*)lucy);
 	depthShader->BindObject((Object*)lucyleft);
 	depthShader->BindObject((Object*)lucyRight);
+	depthShader->BindObject((Object*)armadilloBack);
+	depthShader->BindObject((Object*)armadilloMiddle);
+	depthShader->BindObject((Object*)armadilloFront);
+	depthShader->BindObject((Object*)PbrGun);
 	depthShaderList.push_back(depthShader);
 
 
@@ -194,6 +262,10 @@ void Scene::Init()
 	blinn->BindObject((Object*)lucy);
 	blinn->BindObject((Object*)lucyleft);
 	blinn->BindObject((Object*)lucyRight);
+	blinn->BindObject((Object*)armadilloBack);
+	blinn->BindObject((Object*)armadilloMiddle);
+	blinn->BindObject((Object*)armadilloFront);
+	blinn->BindObject((Object*)PbrGun);
 	blinn->BindObject((Object*)lightMesh);
 	blinn->BindObject((Object*)lightMesh1);
 	blinn->BindObject((Object*)lightMesh2);

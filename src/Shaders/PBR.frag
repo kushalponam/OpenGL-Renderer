@@ -32,6 +32,11 @@ uniform float metallic;
 uniform float roughness;
 //uniform float ao;
 
+uniform sampler2D albedoTexture;
+uniform sampler2D metallicTexture;
+uniform sampler2D roughnessTexture;
+uniform bool hasTexture;
+
 const float PI = 3.14159;
 
 
@@ -94,7 +99,14 @@ vec3 fresnelSchilick(float cosTheta, vec3 F0,float roughness){
 void main()
 {
 	vec3 F0 = vec3(0.04);
-	F0 = mix(F0,albedo,metallic);
+	
+	vec3 albedoTexCol = texture2D(albedoTexture,UV).rgb;
+	float metallicTexCol = texture2D(metallicTexture,UV).r;
+	float roughnessTexCol = texture2D(roughnessTexture,UV).r;
+	float roughness_mix = roughness + roughnessTexCol;
+
+	F0 = mix(F0,(albedo + albedoTexCol),(metallic+metallicTexCol));
+	
 
 	vec3 Lo = vec3(0.0);
 	float NdotV = max(dot(Normal,ViewDirection),0.0);
@@ -102,7 +114,7 @@ void main()
 	vec3 R = 2 * dot(Normal,ViewDirection) * Normal - ViewDirection;
 	R = vec3( inverse(view) * vec4(R,0.0));
 
-	vec3 specularFilterCol = textureLod(specularFilter,R, roughness * 4.0).rgb;
+	vec3 specularFilterCol = textureLod(specularFilter,R, roughness_mix * 4.0).rgb;
 	
 	vec3 finalKD= vec3(0.0);
 	//int i=0;
@@ -127,14 +139,14 @@ void main()
 		
 		radiance = lightCol * attenuation;
 		
-		float NDF = DistributionGGX(NdotH, roughness);
-		float G = GeometrySmith(NdotV,NdotL,roughness);
+		float NDF = DistributionGGX(NdotH, roughness_mix);
+		float G = GeometrySmith(NdotV,NdotL,roughness_mix);
 		
 		
-		vec3 F = fresnelSchilick(NdotV,F0,roughness);
+		vec3 F = fresnelSchilick(NdotV,F0,roughness_mix);
 		vec3 kS = F;
 		vec3 kD = vec3(1.0) - kS;
-		kD *= 1.0 - metallic;
+		kD *= 1.0 - (metallic+metallicTexCol);
 
 		finalKD += kD * radiance;
 
@@ -144,18 +156,18 @@ void main()
 
 		float shadow = ShadowCalculation(NdotL,i);
 
-		Lo += ( kD * albedo* (1.0-shadow) / PI + brdf )* radiance * NdotL;
+		Lo += ( kD * (albedo+albedoTexCol) * (1.0-shadow) / PI + brdf )* radiance * NdotL;
 		
 	
 	}
 
-	vec3 F_1 = fresnelSchilick(NdotV,F0,roughness);
+	vec3 F_1 = fresnelSchilick(NdotV,F0,roughness_mix);
 	
 	vec3 Normal_world = vec3( view * vec4(Normal,0.0));
 	
 	vec3 irradiance = texture(irradianceMap,Normal_world).rgb;
 	
-	vec2 brdf_1 = texture(brdfFilter, vec2(NdotV,roughness)).rg;
+	vec2 brdf_1 = texture(brdfFilter, vec2(NdotV,roughness_mix)).rg;
 
 	vec3 specular = specularFilterCol * (F_1 * brdf_1.x + brdf_1.y);
 

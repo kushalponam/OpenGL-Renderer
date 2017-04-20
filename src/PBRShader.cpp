@@ -43,13 +43,6 @@ void PBRShader::RegisterUniforms()
 	}
 
 	// in fragment Shader
-	/*program.RegisterUniform(14, "cubeMap");
-	program.RegisterUniform(15, "albedo");
-	program.RegisterUniform(16, "metallic");
-	program.RegisterUniform(17, "roughness");
-	program.RegisterUniform(18, "irradianceMap");
-	program.RegisterUniform(19, "specularFilter");
-	program.RegisterUniform(20, "brdfFilter");*/
 	program.RegisterUniform(33, "cubeMap");
 	program.RegisterUniform(34, "albedo");
 	program.RegisterUniform(35, "metallic");
@@ -57,7 +50,9 @@ void PBRShader::RegisterUniforms()
 	program.RegisterUniform(37, "irradianceMap");
 	program.RegisterUniform(38, "specularFilter");
 	program.RegisterUniform(39, "brdfFilter");
-
+	program.RegisterUniform(40, "albedoTexture");
+	program.RegisterUniform(41, "metallicTexture");
+	program.RegisterUniform(42, "roughnessTexture");
 
 }
 
@@ -137,6 +132,7 @@ void PBRShader::Render()
 {
 	Bind();
 	Scene *scene = Scene::getScene();
+	TexLibrary *texLib = TexLibrary::getInstance();
 
 	//get objects MVP and draw that object using its indices
 	for (unsigned int i = 0; i < ObjectList.size(); i++) {
@@ -164,17 +160,20 @@ void PBRShader::Render()
 		program.SetUniform(11, 0);*/
 
 		if (obj->GetMaterial()->HasTexture()) {
-
-			std::string diffuseTexName = obj->GetMaterial()->GetDiffuseTexture()->GetName();
-			int texID1 = TexLibrary::getInstance()->GetTextureID(diffuseTexName);
-			obj->GetMaterial()->ActivateDiffuseTexture();
-			program.SetUniform(10, texID1);
-
-
-			std::string specularTexName = obj->GetMaterial()->GetSpecularTexture()->GetName();
-			int texID2 = TexLibrary::getInstance()->GetTextureID(specularTexName);
-			obj->GetMaterial()->ActivateSpecularTexture();
-			program.SetUniform(11, texID2);
+			texLib->BindTexture(obj->GetMaterial()->GetAlbedoName());
+			texLib->BindTexture(obj->GetMaterial()->GetMetallicName());
+			texLib->BindTexture(obj->GetMaterial()->GetRoughnessName());
+			program.SetUniform(40, obj->GetMaterial()->GetAlbedoUnit());
+			program.SetUniform(41, obj->GetMaterial()->GetMetallicUnit());
+			program.SetUniform(42, obj->GetMaterial()->GetRoughnessUnit());
+		}else
+		{
+			glActiveTexture(GL_TEXTURE0 + 10);
+			glBindTexture(GL_TEXTURE_2D, 0);
+			glActiveTexture(GL_TEXTURE0 + 11);
+			glBindTexture(GL_TEXTURE_2D, 0);
+			glActiveTexture(GL_TEXTURE0 + 12);
+			glBindTexture(GL_TEXTURE_2D, 0);
 
 		}
 

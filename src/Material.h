@@ -28,22 +28,47 @@ public:
 	void LoadDiffuseTexture(std::string texName);
 	void LoadSpecularTexture(std::string texName);
 
+	void SetAlbedoUnit(int i_unit) { albedoUnit = i_unit; }
+	void SetMetallicUnit(int i_unit) { metallicUnit = i_unit; }
+	void SetRoughnessUnit(int i_unit) { roughnessUnit = i_unit; }
+
+	int GetAlbedoUnit() const { return albedoUnit; }
+	int GetMetallicUnit() const { return metallicUnit; }
+	int GetRoughnessUnit() const { return roughnessUnit; }
+
+	void SetAlbedoName(std::string i_name) { albedoName = i_name; }
+	void SetMetallicName(std::string i_name) { metallicName = i_name; }
+	void SetRoughnessName(std::string i_name) { roughnessName = i_name; }
+
+	std::string GetAlbedoName() const { return albedoName; }
+	std::string GetMetallicName() const { return metallicName; }
+	std::string GetRoughnessName() const { return roughnessName; }
+
 	Texture2D* GetDiffuseTexture() { return diffuseTexture; };
 	Texture2D* GetSpecularTexture() { return specularTexture; };
 	cy::TriMesh::Mtl GetMTL();
 
 	void ActivateDiffuseTexture();
 	void ActivateSpecularTexture();
-	bool HasTexture() { return diffuseTexture != nullptr; }
+	bool HasTexture() { return hasTexture; }
+	void SetHasTexture(bool has) { hasTexture = has; }
 private:
 	cy::TriMesh::Mtl mtl;
 	Texture2D *diffuseTexture;
 	Texture2D *specularTexture;
 
+	int albedoUnit;
+	int metallicUnit;
+	int roughnessUnit;
+
+	std::string albedoName;
+	std::string metallicName;
+	std::string roughnessName;
+
 	glm::vec3 albedo;
 	float metallic;
 	float roughness;
-
+	bool hasTexture;
 
 };
 
