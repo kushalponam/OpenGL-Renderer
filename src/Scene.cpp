@@ -252,7 +252,7 @@ void Scene::Init()
 	//Create camera and lights.
 	camera = new Camera();
 	camera->InitPerspectiveCamera(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 500.0f);
-	camera->SetPosition(glm::vec3(0, 0, -20));
+	camera->SetPosition(glm::vec3(0, 20, -100));
 	camera->SetViewDirection(glm::vec3(0, 0, 1));
 	camera->Update();
 	
@@ -341,7 +341,7 @@ void Scene::Init()
 
 	//reset camera after capturing environment;
 	camera->InitPerspectiveCamera(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 500.0f);
-	camera->SetPosition(glm::vec3(0, 0, -20));
+	camera->SetPosition(glm::vec3(0, 20, -100));
 	camera->SetViewDirection(glm::vec3(0, 0, 1));
 	camera->Update();
 
